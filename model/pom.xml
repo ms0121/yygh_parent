@@ -11,6 +11,8 @@
 
     <artifactId>model</artifactId>
 
+
+
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
