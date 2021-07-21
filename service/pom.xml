@@ -13,9 +13,31 @@
     <packaging>pom</packaging>
     <modules>
         <module>service_user</module>
+        <module>service_hosp</module>
     </modules>
 
     <dependencies>
+
+        <!-- 导入实体类 -->
+        <dependency>
+            <groupId>com.lms</groupId>
+            <artifactId>model</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <!-- 导入工具类   -->
+        <dependency>
+            <groupId>com.lms</groupId>
+            <artifactId>service_util</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.lms</groupId>
+            <artifactId>common_util</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
         <!--web-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -37,21 +59,24 @@
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
         </dependency>
+
         <!-- 服务调用feign -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
-        <!-- nacos服务注册 -->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-        </dependency>
-        <!-- 流量控制sentinel -->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-starter-openfeign</artifactId>-->
+<!--        </dependency>-->
+
+<!--        &lt;!&ndash; nacos服务注册 &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>-->
+<!--        </dependency>-->
+
+<!--        &lt;!&ndash; 流量控制sentinel &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>-->
+<!--        </dependency>-->
     </dependencies>
     <build>
         <plugins>

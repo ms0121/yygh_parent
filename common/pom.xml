@@ -37,14 +37,15 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
-        <!--swagger-->
+        <!--swagger测试工具依赖包(等价于postman类型的测试工具)-->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.springfox</groupId>
+            <groupId >io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
         </dependency>
     </dependencies>
+
 </project>
