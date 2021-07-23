@@ -1,5 +1,6 @@
 package com.lms.yygh.model.hosp;
 
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.lms.yygh.model.base.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -45,6 +46,9 @@ public class HospitalSet extends BaseEntity {
 	@TableField("contacts_phone")
 	private String contactsPhone;
 
+	/**
+	 * 对于逻辑删除的字段，必须添加该注解：@TableLogic
+	 */
 	@ApiModelProperty(value = "状态")
 	@TableField("status")
 	private Integer status;

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.liu.yygh.service.HospitalSetService;
 import com.lms.yygh.common.result.Result;
+import com.lms.yygh.common.utils.MD5;
 import com.lms.yygh.model.hosp.HospitalSet;
 import com.lms.yygh.vo.hosp.HospitalSetQueryVo;
 import io.swagger.annotations.Api;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author lms
@@ -58,7 +60,7 @@ public class HospitalSetController {
     @PostMapping("findPageHospSet/{current}/{limit}")
     public Result findPage(@PathVariable long current,
                            @PathVariable long limit,
-                           // @RequestBody(required = false)表示当前的参数可传或者不传，
+                           // @RequestBody(required = false)表示当前的参数按照json的方式进行提交，可传或者不传，
                            // 请求方式必须为PostMapping
                            @RequestBody(required = false) HospitalSetQueryVo hospitalSetQueryVo){
         // 创建page对象，传递当前页，每页的记录数
@@ -85,12 +87,76 @@ public class HospitalSetController {
         return Result.ok(hospitalSetPage);
     }
 
+    /**
+     * 4.添加医院设置
+     * @RequestBody 表示当前的这个参数为必须
+     * @param hospitalSet
+     * @return
+     */
+    @PostMapping("saveHospitalSet")
+    public Result saveHospitalSet(@RequestBody HospitalSet hospitalSet){
+        // 添加医院数据之后要进行参数的校验工作
+        // 设置医院的状态值
+        hospitalSet.setStatus(0);
+        // 设置签名秘钥,使用md5进行加密
+        Random random = new Random();
+        hospitalSet.setSignKey(MD5.encrypt(System.currentTimeMillis() + "" + random.nextInt(1000)));
 
+        // 调用service
+        boolean flag = hospitalSetService.save(hospitalSet);
+        if (flag) {
+            return Result.ok();
+        }else {
+            return Result.fail();
+        }
+    }
 
-    // 4.添加医院设置
     // 5.根据id获取医院设置
+    @GetMapping("getHospitalSet/{id}")
+    public Result getHospitalSetById(@PathVariable Long id){
+        HospitalSet hospitalSet = hospitalSetService.getById(id);
+        return Result.ok(hospitalSet);
+    }
+
     // 6.修改医院设置
-    // 7、批量删除医院设置
+    @PostMapping("updateHospitalSet")
+    public Result updateHospitalSetById(@RequestBody HospitalSet hospitalSet){
+        boolean b = hospitalSetService.updateById(hospitalSet);
+        if (b) {
+            return Result.ok();
+        }else {
+            return Result.fail();
+        }
+    }
+
+    // 7、批量删除医院设置,ids来自于请求参数，并非来自路径
+    @DeleteMapping("batchRemove")
+    public Result batchRemoveHospitalSet(@RequestBody List ids){
+        boolean b = hospitalSetService.removeByIds(ids);
+        return Result.ok();
+    }
+
+    // 8、医院锁定和解锁的操作
+    @PutMapping("lockHospitalSet/{id}/{status}")
+    public Result lockHospitalSet(@PathVariable Long id, @PathVariable Integer status){
+        HospitalSet hospitalSet = hospitalSetService.getById(id);
+        // 设置医院的状态
+        hospitalSet.setStatus(status);
+        hospitalSetService.updateById(hospitalSet);
+        return Result.ok();
+    }
+
+    // 9、发送签名秘钥
+    @PutMapping("sendKey/{id}")
+    public Result sendKey(@PathVariable Long id){
+        // 获取指定id的医院信息
+        HospitalSet hospitalSet = hospitalSetService.getById(id);
+        String hosname = hospitalSet.getHosname();
+        String signKey = hospitalSet.getSignKey();
+
+        // 发送信息
+        return Result.ok();
+    }
 
 
 }
