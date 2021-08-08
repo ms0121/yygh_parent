@@ -25,6 +25,7 @@ import java.util.Random;
 @Api(tags = "医院设置管理")
 @RestController
 @RequestMapping("/admin/hosp/hospitalSet")
+@CrossOrigin   // 允许跨域
 public class HospitalSetController {
 
     @Resource
@@ -60,11 +61,12 @@ public class HospitalSetController {
     @PostMapping("findPageHospSet/{current}/{limit}")
     public Result findPage(@PathVariable long current,
                            @PathVariable long limit,
-                           // @RequestBody(required = false)表示当前的参数按照json的方式进行提交，可传或者不传，
+                           // @RequestBody(required = false) RequestBody表示当前的参数按照json的方式进行提交，
+                           // required = false 表示当前的参数可传或者不传，
                            // 请求方式必须为PostMapping
                            @RequestBody(required = false) HospitalSetQueryVo hospitalSetQueryVo){
         // 创建page对象，传递当前页，每页的记录数
-        Page<HospitalSet> page = new Page<>();
+        Page<HospitalSet> page = new Page<>(current, limit);
 
         // 构建查询的条件
         QueryWrapper<HospitalSet> wrapper = new QueryWrapper<>();
@@ -100,7 +102,8 @@ public class HospitalSetController {
         hospitalSet.setStatus(0);
         // 设置签名秘钥,使用md5进行加密
         Random random = new Random();
-        hospitalSet.setSignKey(MD5.encrypt(System.currentTimeMillis() + "" + random.nextInt(1000)));
+        hospitalSet.setSignKey(MD5.encrypt(System.currentTimeMillis()
+                + "" + random.nextInt(1000)));
 
         // 调用service
         boolean flag = hospitalSetService.save(hospitalSet);
@@ -131,8 +134,8 @@ public class HospitalSetController {
 
     // 7、批量删除医院设置,ids来自于请求参数，并非来自路径
     @DeleteMapping("batchRemove")
-    public Result batchRemoveHospitalSet(@RequestBody List ids){
-        boolean b = hospitalSetService.removeByIds(ids);
+    public Result batchRemoveHospitalSet(@RequestBody List<Long> idList){
+        hospitalSetService.removeByIds(idList);
         return Result.ok();
     }
 
