@@ -158,7 +158,6 @@ public class HospitalSetController {
         return Result.ok();
     }
 
-
 }
 
 
