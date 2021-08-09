@@ -9,7 +9,6 @@ import com.lms.yygh.model.hosp.HospitalSet;
 import com.lms.yygh.vo.hosp.HospitalSetQueryVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import javafx.scene.shape.VLineTo;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -84,7 +83,6 @@ public class HospitalSetController {
 
         // 调用mybatis-plus中的方法实现分页调用
         Page<HospitalSet> hospitalSetPage = hospitalSetService.page(page, wrapper);
-
         // 返回数据
         return Result.ok(hospitalSetPage);
     }
@@ -162,14 +160,4 @@ public class HospitalSetController {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
 
