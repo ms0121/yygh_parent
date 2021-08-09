@@ -1,4 +1,4 @@
-package com.lms.yygh.common.result;
+package com.liu.yygh.common.result;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

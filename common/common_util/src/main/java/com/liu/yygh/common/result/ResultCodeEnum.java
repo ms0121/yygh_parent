@@ -1,4 +1,4 @@
-package com.lms.yygh.common.result;
+package com.liu.yygh.common.result;
 
 import lombok.Getter;
 

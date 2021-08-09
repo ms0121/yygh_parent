@@ -1,6 +1,6 @@
-package com.lms.yygh.common.exception;
+package com.liu.yygh.common.exception;
 
-import com.lms.yygh.common.result.Result;
+import com.liu.yygh.common.result.Result;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;

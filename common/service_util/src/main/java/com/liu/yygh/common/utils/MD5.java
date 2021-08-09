@@ -1,4 +1,4 @@
-package com.lms.yygh.common.utils;
+package com.liu.yygh.common.utils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
