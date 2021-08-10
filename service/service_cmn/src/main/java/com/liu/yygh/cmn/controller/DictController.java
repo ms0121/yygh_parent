@@ -6,8 +6,10 @@ import com.lms.yygh.model.cmn.Dict;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -23,6 +25,22 @@ public class DictController {
 
     @Resource
     private DictService dictService;
+
+
+    @ApiOperation(value = "数据字典导入")
+    @PostMapping("importData")
+    public Result importDict(MultipartFile file){
+        dictService.importData(file);
+        return Result.ok();
+    }
+
+
+    // 将数据字典中的信息导出到excel表格中
+    @ApiOperation(value = "数据字典导出")
+    @GetMapping("exportData")
+    public void exportDict(HttpServletResponse response){
+        dictService.exportData(response);
+    }
 
     // 根据数据id查询子数据列表
     @ApiOperation(value = "根据数据id查询子数据列表")
