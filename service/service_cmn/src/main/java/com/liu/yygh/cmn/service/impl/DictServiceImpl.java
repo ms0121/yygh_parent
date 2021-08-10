@@ -9,6 +9,8 @@ import com.liu.yygh.cmn.service.DictService;
 import com.lms.yygh.model.cmn.Dict;
 import com.lms.yygh.vo.cmn.DictEeVo;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,9 +26,22 @@ import java.util.List;
 @Service
 public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements DictService {
 
-    // ServiceImpl已经在容器中注入了BaseMapper，所以在service的实现类中就可以直接使用BaseMapper
-    // 根据数据id查询子数据列表
+    /**
+     * ServiceImpl已经在容器中注入了BaseMapper，所以在service的实现类中就可以直接使用BaseMapper
+     * 根据数据id查询子数据列表
+     * 将该方法查询得到的结果放置在缓存中，下次再来查询的时候，直接从缓存中拿取数据，如果缓存中没有数据信息
+     * 将会执行该方法，并将结果放置在缓存中
+     *
+     * 添加缓存的步骤：
+     *  1.添加缓存的相关依赖
+     *  2.添加redis的配置类
+     *  3.在业务方法中(服务)添加redis配置
+     *
+     * @param id
+     * @return
+     */
     @Override
+    @Cacheable(value = "dict", keyGenerator = "keyGenerator")
     public List<Dict> findChildData(Long id) {
         // 使用该对象来构建sql语句的
         QueryWrapper<Dict> wrapper = new QueryWrapper<>();
@@ -51,7 +66,6 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
     @Override
     public void exportData(HttpServletResponse response) {
         try {
-
             // 设置返回客户端的contentType和编码方式
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
@@ -85,7 +99,10 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
      * 输入导入功能
      * @param file 导入的文件名，
      *   文件输入流，导入的数据类型，以及监听器对象
+     * allEntries = true: 方法调用后清空所有缓存
+     *
      */
+    @CacheEvict(value = "dict", allEntries=true)
     @Override
     public void importData(MultipartFile file) {
         try {

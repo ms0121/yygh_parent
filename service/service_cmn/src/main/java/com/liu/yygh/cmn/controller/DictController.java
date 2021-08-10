@@ -34,7 +34,6 @@ public class DictController {
         return Result.ok();
     }
 
-
     // 将数据字典中的信息导出到excel表格中
     @ApiOperation(value = "数据字典导出")
     @GetMapping("exportData")
