@@ -18,12 +18,16 @@ spring:
     username: root
     password:
 
-
 # 返回json的全局时间格式
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
 
+
+# MongoDB的使用
+  data:
+    mongodb:
+      uri: mongodb://192.168.115.129:27017/yygh_hosp
 
 ##服务注册/发现中心的地址
 #  cloud:

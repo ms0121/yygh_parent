@@ -18,10 +18,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @ApiModel(description = "Hospital")
 @Document("Hospital")
+// 表示当前的hospital数据放入到MongoDB中，document相当于sql中的一条记录
 public class Hospital extends BaseMongoEntity {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@ApiModelProperty(value = "医院编号")
 	@Indexed(unique = true) //唯一索引
 	private String hoscode;
@@ -64,6 +65,5 @@ public class Hospital extends BaseMongoEntity {
 	public void setBookingRule(String bookingRule) {
 		this.bookingRule = JSONObject.parseObject(bookingRule, BookingRule.class);
 	}
-
 }
 
