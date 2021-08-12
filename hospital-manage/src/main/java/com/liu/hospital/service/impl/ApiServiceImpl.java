@@ -9,10 +9,10 @@ import com.liu.hospital.model.Schedule;
 import com.liu.hospital.service.ApiService;
 import com.liu.hospital.util.BeanUtils;
 import com.liu.hospital.util.HttpRequestHelper;
+import com.liu.hospital.util.MD5;
 import com.liu.hospital.util.YyghException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,6 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -34,13 +33,13 @@ import java.util.Scanner;
 @Slf4j
 public class ApiServiceImpl implements ApiService {
 
-    @Autowired
+    @javax.annotation.Resource
     private ScheduleMapper scheduleMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private HospitalSetMapper hospitalSetMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private ApiService apiService;
 
     @Value("classpath:hospital.json")
@@ -68,7 +67,7 @@ public class ApiServiceImpl implements ApiService {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("hoscode",this.getHoscode());
         paramMap.put("timestamp", HttpRequestHelper.getTimestamp());
-        paramMap.put("sign", HttpRequestHelper.getSign(paramMap, this.getSignKey()));
+        paramMap.put("sign", MD5.encrypt(this.getSignKey()));
         JSONObject respone = HttpRequestHelper.sendRequest(paramMap,this.getApiUrl()+"/api/hosp/hospital/show");
         System.out.println(respone.toJSONString());
         if(null != respone && 200 == respone.getIntValue("code")) {
@@ -80,6 +79,7 @@ public class ApiServiceImpl implements ApiService {
 
     @Override
     public boolean saveHospital(String data) {
+        // 将字符串数据转为一盒json数据
         JSONObject jsonObject = JSONObject.parseObject(data);
 
         Map<String, Object> paramMap = new HashMap<>();
@@ -99,7 +99,7 @@ public class ApiServiceImpl implements ApiService {
         paramMap.put("bookingRule",bookingRule.toJSONString());
 
         paramMap.put("timestamp", HttpRequestHelper.getTimestamp());
-        paramMap.put("sign", HttpRequestHelper.getSign(paramMap, this.getSignKey()));
+        paramMap.put("sign", MD5.encrypt(this.getSignKey()));
 
         JSONObject respone = HttpRequestHelper.sendRequest(paramMap,this.getApiUrl()+"/api/hosp/saveHospital");
         System.out.println(respone.toJSONString());

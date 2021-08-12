@@ -5,7 +5,6 @@ import com.liu.hospital.model.HospitalSet;
 import com.liu.hospital.service.ApiService;
 import com.liu.hospital.util.YyghException;
 import io.swagger.annotations.Api;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
