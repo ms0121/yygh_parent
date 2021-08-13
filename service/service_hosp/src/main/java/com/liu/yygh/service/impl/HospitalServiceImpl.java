@@ -39,11 +39,10 @@ public class HospitalServiceImpl implements HospitalService {
         // 3.判断
         if (tempHospital != null){
             // 说明数据库中存在该信息，则为修改操作
-            hospital.setStatus(tempHospital.getStatus());
-            hospital.setCreateTime(tempHospital.getCreateTime());
-            hospital.setUpdateTime(tempHospital.getUpdateTime());
-            hospital.setIsDeleted(tempHospital.getIsDeleted());
-            hospitalRepository.save(hospital);
+            tempHospital.setUpdateTime(hospital.getUpdateTime());
+            tempHospital.setIsDeleted(0);
+            tempHospital.setStatus(hospital.getStatus());
+            hospitalRepository.save(tempHospital);
         }else {
             // 如果不存在，则为添加操作
             //0：未上线 1：已上线

@@ -121,7 +121,7 @@ public class ApiServiceImpl implements ApiService {
         paramMap.put("page",pageNum);
         paramMap.put("limit",pageSize);
         paramMap.put("timestamp", HttpRequestHelper.getTimestamp());
-        paramMap.put("sign", HttpRequestHelper.getSign(paramMap, this.getSignKey()));
+        paramMap.put("sign",  MD5.encrypt(this.getSignKey()));
         JSONObject respone = HttpRequestHelper.sendRequest(paramMap,this.getApiUrl()+"/api/hosp/department/list");
         if(null != respone && 200 == respone.getIntValue("code")) {
             JSONObject jsonObject = respone.getJSONObject("data");
@@ -135,6 +135,7 @@ public class ApiServiceImpl implements ApiService {
         return result;
     }
 
+    // 上传科室
     @Override
     public boolean saveDepartment(String data) {
         JSONArray jsonArray = new JSONArray();
@@ -157,7 +158,7 @@ public class ApiServiceImpl implements ApiService {
             paramMap.put("bigname",jsonObject.getString("bigname"));
 
             paramMap.put("timestamp", HttpRequestHelper.getTimestamp());
-            paramMap.put("sign",HttpRequestHelper.getSign(paramMap, this.getSignKey()));
+            paramMap.put("sign", MD5.encrypt(this.getSignKey()));
             JSONObject respone = HttpRequestHelper.sendRequest(paramMap,this.getApiUrl()+"/api/hosp/saveDepartment");
             System.out.println(respone.toJSONString());
 
@@ -193,7 +194,7 @@ public class ApiServiceImpl implements ApiService {
         paramMap.put("page",pageNum);
         paramMap.put("limit",pageSize);
         paramMap.put("timestamp", HttpRequestHelper.getTimestamp());
-        paramMap.put("sign", HttpRequestHelper.getSign(paramMap, this.getSignKey()));
+        paramMap.put("sign",  MD5.encrypt(this.getSignKey()));
         JSONObject respone = HttpRequestHelper.sendRequest(paramMap,this.getApiUrl()+"/api/hosp/schedule/list");
         System.out.println(respone.toJSONString());
         if(null != respone && 200 == respone.getIntValue("code")) {
@@ -259,7 +260,7 @@ public class ApiServiceImpl implements ApiService {
             paramMap.put("status",schedule.getStatus());
             paramMap.put("hosScheduleId",schedule.getId());
             paramMap.put("timestamp", HttpRequestHelper.getTimestamp());
-            paramMap.put("sign",HttpRequestHelper.getSign(paramMap, this.getSignKey()));
+            paramMap.put("sign", MD5.encrypt(this.getSignKey()));
 
             JSONObject respone = HttpRequestHelper.sendRequest(paramMap,this.getApiUrl()+"/api/hosp/saveSchedule");
             System.out.println(respone.toJSONString());
@@ -276,7 +277,7 @@ public class ApiServiceImpl implements ApiService {
         paramMap.put("hoscode",this.getHoscode());
         paramMap.put("hosScheduleId",hosScheduleId);
         paramMap.put("timestamp", HttpRequestHelper.getTimestamp());
-        paramMap.put("sign", HttpRequestHelper.getSign(paramMap, this.getSignKey()));
+        paramMap.put("sign",  MD5.encrypt(this.getSignKey()));
         JSONObject respone = HttpRequestHelper.sendRequest(paramMap,this.getApiUrl()+"/api/hosp/schedule/remove");
         System.out.println(respone.toJSONString());
         if(null != respone && 200 == respone.getIntValue("code")) {

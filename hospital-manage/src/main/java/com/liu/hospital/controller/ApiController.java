@@ -81,6 +81,7 @@ public class ApiController extends BaseController {
 		return this.successPage(null,request);
 	}
 
+	// 科室查询
 	@RequestMapping("/department/list")
 	public String findDepartment(ModelMap model,
 								 @RequestParam(defaultValue = "1") int pageNum,
@@ -107,6 +108,7 @@ public class ApiController extends BaseController {
 		return "department/create";
 	}
 
+	// 上传科室数据
 	@RequestMapping(value="/department/save",method=RequestMethod.POST)
 	public String save(String data, HttpServletRequest request) {
 		try {
