@@ -4,6 +4,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.liu.yygh.repository.HospitalRepository;
 import com.liu.yygh.service.HospitalService;
 import com.lms.yygh.model.hosp.Hospital;
+import com.lms.yygh.vo.hosp.HospitalQueryVo;
+import org.bouncycastle.eac.EACCertificateBuilder;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -59,6 +63,28 @@ public class HospitalServiceImpl implements HospitalService {
     public Hospital getByHoscode(String hoscode) {
         Hospital hospital = hospitalRepository.getHospitalByHoscode(hoscode);
         return hospital;
+    }
+
+    // 条件查询分页
+    @Override
+    public Page<Hospital> selectHosp(Integer page, Integer limit, HospitalQueryVo hospitalQueryVo) {
+        // 创建pageable对象，用于封装当前页码和每页显示的记录数
+        Pageable pageable = PageRequest.of(page, limit);
+        // 创建条件匹配器
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                // 模糊匹配,忽略大小写
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
+                .withIgnoreCase(true);
+
+        // 将前端传过来的查询条件封装在返回数据类型的对象中
+        Hospital hospital = new Hospital();
+        BeanUtils.copyProperties(hospitalQueryVo, hospital);
+
+        // 创建对象
+        Example<Hospital> example = Example.of(hospital, matcher);
+        // 调用方法实现查询操作
+        Page<Hospital> all = hospitalRepository.findAll(example, pageable);
+        return all;
     }
 
 }

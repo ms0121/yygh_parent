@@ -1,6 +1,8 @@
 package com.liu.yygh.service;
 
 import com.lms.yygh.model.hosp.Hospital;
+import com.lms.yygh.vo.hosp.HospitalQueryVo;
+import org.springframework.data.domain.Page;
 
 import java.util.Map;
 
@@ -15,4 +17,7 @@ public interface HospitalService {
 
     // 实现根据医院编号查询的操作
     Hospital getByHoscode(String hoscode);
+
+    // mongodb的条件查询分页函数
+    Page<Hospital> selectHosp(Integer page, Integer limit, HospitalQueryVo hospitalQueryVo);
 }

@@ -51,4 +51,24 @@ public class DictController {
     }
 
 
+    // 根据DictCode和value进行查询每个dict记录的name属性
+    @GetMapping("getName/{dictCode}/{value}")
+    public String getName(@PathVariable String dictCode,
+                          @PathVariable String value){
+        String dictName = dictService.getDictName(dictCode, value);
+        return dictName;
+    }
+
+
+    // 根据value进行查询每个dict记录的name属性
+    @GetMapping("getName/{value}")
+    public String getName(@PathVariable String value){
+        String dictName = dictService.getDictName("", value);
+        return dictName;
+    }
+
+
+
+
+
 }

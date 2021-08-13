@@ -29,13 +29,13 @@ spring:
     mongodb:
       uri: mongodb://192.168.115.129:27017/yygh_hosp
 
-##服务注册/发现中心的地址
-#  cloud:
-#    nacos:
-#      discovery:
-#        server-addr: 127.0.0.1:8848
-#
-#
+#服务注册/发现中心的地址
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+
+
 ##设置sentinel地址
 #    sentinel:
 #      transport:

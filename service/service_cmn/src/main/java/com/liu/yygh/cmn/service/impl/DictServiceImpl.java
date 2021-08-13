@@ -12,6 +12,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -113,6 +114,37 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
             e.printStackTrace();
         }
     }
+
+    // 查询dictName
+    @Override
+    public String getDictName(String dictCode, String value) {
+        // 如果dictCode为空，直接根据value进行查询
+        if (StringUtils.isEmpty(dictCode)){
+            QueryWrapper<Dict> wrapper = new QueryWrapper<>();
+            wrapper.eq("value", value);
+            Dict dict = baseMapper.selectOne(wrapper);
+            return dict.getName();
+        } else {
+            // dict不为空，根据dictCode和value进行查询
+            // 首先根据dictCode查出dict对象，得到dict的id值
+            Dict codeDict = this.getDictByDictCode(dictCode);
+            Long parentId = codeDict.getId();
+
+            // 根据parentId和value值进行查询
+            Dict dict = baseMapper.selectOne(new QueryWrapper<Dict>()
+                    .eq("parent_id", parentId)
+                    .eq("value", value));
+            return dict.getName();
+        }
+    }
+
+    // 根据dictCode查询dict对象
+    private Dict getDictByDictCode(String dictCode){
+        QueryWrapper<Dict> wrapper = new QueryWrapper<>();
+        wrapper.eq("dict_code", dictCode);
+        return baseMapper.selectOne(wrapper);
+    }
+
 
     // 判断该id下面是否有子节点
     private boolean isChildren(Long id) {
