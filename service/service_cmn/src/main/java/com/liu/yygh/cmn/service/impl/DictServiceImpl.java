@@ -130,7 +130,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
             Dict codeDict = this.getDictByDictCode(dictCode);
             Long parentId = codeDict.getId();
 
-            // 根据parentId和value值进行查询
+            // 根据parentId和value值进行查询医院的等级
             Dict dict = baseMapper.selectOne(new QueryWrapper<Dict>()
                     .eq("parent_id", parentId)
                     .eq("value", value));

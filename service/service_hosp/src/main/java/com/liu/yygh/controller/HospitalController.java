@@ -35,7 +35,7 @@ public class HospitalController {
     @GetMapping("list/{page}/{limit}")
     public Result listHosp(@PathVariable Integer page, @PathVariable Integer limit,
                            HospitalQueryVo hospitalQueryVo){
-        Page<Hospital> pageModel = hospitalService.selectHosp(page, limit, hospitalQueryVo);
+        Page<Hospital> pageModel = hospitalService.selectHospPage(page, limit, hospitalQueryVo);
         return Result.ok(page);
     }
 

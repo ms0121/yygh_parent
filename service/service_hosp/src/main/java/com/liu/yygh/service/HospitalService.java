@@ -19,5 +19,5 @@ public interface HospitalService {
     Hospital getByHoscode(String hoscode);
 
     // mongodb的条件查询分页函数
-    Page<Hospital> selectHosp(Integer page, Integer limit, HospitalQueryVo hospitalQueryVo);
+    Page<Hospital> selectHospPage(Integer page, Integer limit, HospitalQueryVo hospitalQueryVo);
 }

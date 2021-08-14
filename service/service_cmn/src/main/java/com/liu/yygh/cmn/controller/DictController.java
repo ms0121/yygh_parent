@@ -52,9 +52,10 @@ public class DictController {
 
 
     // 根据DictCode和value进行查询每个dict记录的name属性
+    // 查询医院等级
     @GetMapping("getName/{dictCode}/{value}")
-    public String getName(@PathVariable String dictCode,
-                          @PathVariable String value){
+    public String getName(@PathVariable("dictCode") String dictCode,
+                          @PathVariable("value") String value){
         String dictName = dictService.getDictName(dictCode, value);
         return dictName;
     }
@@ -62,7 +63,7 @@ public class DictController {
 
     // 根据value进行查询每个dict记录的name属性
     @GetMapping("getName/{value}")
-    public String getName(@PathVariable String value){
+    public String getName(@PathVariable("value") String value){
         String dictName = dictService.getDictName("", value);
         return dictName;
     }
