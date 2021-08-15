@@ -6,13 +6,13 @@ import com.liu.yygh.repository.HospitalRepository;
 import com.liu.yygh.service.HospitalService;
 import com.lms.yygh.model.hosp.Hospital;
 import com.lms.yygh.vo.hosp.HospitalQueryVo;
-import org.bouncycastle.eac.EACCertificateBuilder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -99,11 +99,46 @@ public class HospitalServiceImpl implements HospitalService {
         return pages;
     }
 
+    // 更新医院的上线状态
+    @Override
+    public void updateStatus(String id, Integer status) {
+        // 首先在mongodb数据库中查询得到对应的医院信息
+        Hospital hospital = hospitalRepository.findById(id).get();
+        // 更新医院的上线状态
+        hospital.setStatus(status);
+        hospital.setUpdateTime(new Date());
+        // 将数据保存在mongo中
+        hospitalRepository.save(hospital);
+    }
+
+    // 医院详情信息(医院信息存储在mongodb中)
+    @Override
+    public Map<String, Object> showHospDetail(String id) {
+        Map<String, Object> map = new HashMap<>();
+        // 从mongodb中查询医院的信息,并从dict中查询医院的等级信息
+        Hospital hospital = hospitalRepository.findById(id).get();
+        Hospital hospital1 = this.setHospitalHosType(hospital);
+        map.put("hospital", hospital1);
+        // 获取医院的预订规则
+        map.put("bookingRule", hospital.getBookingRule());
+        // 不需要再重复返回预约规则
+        hospital1.setBookingRule(null);
+        return map;
+    }
+
     // 设置医院的等级信息
-    // 处查询list集合，遍历进行医院等级封装
-    private void setHospitalHosType(Hospital hospital) {
+    // 处查询list集合，遍历进行
+    private Hospital setHospitalHosType(Hospital hospital) {
+        // 根据dictCode和value获取医院的名称（连表从mongodb和mysql中进行查询）
         String hostypeString = dictFeignClient.getName("Hostype", hospital.getHostype());
+        // 查询省市区
+        String provinceString = dictFeignClient.getName(hospital.getProvinceCode());
+        String cityString = dictFeignClient.getName(hospital.getCityCode());
+        String districtString = dictFeignClient.getName(hospital.getDistrictCode());
+
+        hospital.getParam().put("fullAddress", provinceString + cityString + districtString);
         hospital.getParam().put("hostypeString", hostypeString);
+        return hospital;
     }
 
 }

@@ -2,8 +2,10 @@ package com.liu.yygh.service;
 
 import com.lms.yygh.model.hosp.Department;
 import com.lms.yygh.vo.hosp.DepartmentQueryVo;
+import com.lms.yygh.vo.hosp.DepartmentVo;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,4 +22,7 @@ public interface DepartmentService {
 
     // 科室删除操作
     void remove(String hoscode, String depcode);
+
+    // 根据医院编号，查询医院的所有科室列表
+    List<DepartmentVo> getDeptList(String hoscode);
 }

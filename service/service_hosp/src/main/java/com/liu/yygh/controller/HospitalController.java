@@ -1,16 +1,18 @@
-package com.liu.yygh.controller;
+ package com.liu.yygh.controller;
 
-import com.liu.yygh.common.result.Result;
-import com.liu.yygh.service.HospitalService;
-import com.lms.yygh.model.hosp.Hospital;
-import com.lms.yygh.vo.hosp.HospitalQueryVo;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.*;
+ import com.liu.yygh.common.result.Result;
+ import com.liu.yygh.service.HospitalService;
+ import com.lms.yygh.model.hosp.Hospital;
+ import com.lms.yygh.vo.hosp.HospitalQueryVo;
+ import io.swagger.annotations.ApiOperation;
+ import org.springframework.data.domain.Page;
+ import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+ import javax.annotation.Resource;
+ import java.util.List;
+ import java.util.Map;
 
-/**
+ /**
  * @author lms
  * @date 2021-08-13 - 15:44
  */
@@ -36,8 +38,38 @@ public class HospitalController {
     public Result listHosp(@PathVariable Integer page, @PathVariable Integer limit,
                            HospitalQueryVo hospitalQueryVo){
         Page<Hospital> pageModel = hospitalService.selectHospPage(page, limit, hospitalQueryVo);
-        return Result.ok(page);
+        List<Hospital> content = pageModel.getContent();
+        long elements = pageModel.getTotalElements();
+        System.out.println("content = " + content);
+        return Result.ok(pageModel);
     }
+
+
+     /**
+      * 更新医院的上线状态
+      * @param id
+      * @param status
+      * @return
+      */
+     @ApiOperation(value = "更新上线状态")
+     @GetMapping("updateStatus/{id}/{status}")
+     public Result updateStatus(@PathVariable String id, @PathVariable Integer status){
+        hospitalService.updateStatus(id, status);
+        return Result.ok();
+     }
+
+     /**
+      * 医院详情信息
+      * @param id
+      * @return
+      */
+     @ApiOperation(value = "医院详情信息")
+     @GetMapping("showHospDetail/{id}")
+     public Result showHospDetail(@PathVariable("id") String id){
+        Map<String, Object> map = hospitalService.showHospDetail(id);
+        return Result.ok(map);
+     }
+
 
 
 }

@@ -27,7 +27,7 @@ spring:
 
 #  配置redis做缓存的实现
   redis:
-    host: 192.168.115.128
+    host: 192.168.115.129
     port: 6379
     database: 0
     timeout: 1800000
