@@ -19,7 +19,7 @@ import java.util.List;
 
 @Api(tags = "数据字典接口")
 @RestController   // responsebody + controller
-@CrossOrigin  // 实现跨域
+//@CrossOrigin  // 实现跨域 springcloud-gateway已经配置了跨域解决的办法
 @RequestMapping("/admin/cmn/dict")
 public class DictController {
 

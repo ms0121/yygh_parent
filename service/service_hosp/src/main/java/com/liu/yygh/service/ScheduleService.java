@@ -4,6 +4,7 @@ import com.lms.yygh.model.hosp.Schedule;
 import com.lms.yygh.vo.hosp.ScheduleQueryVo;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,4 +21,10 @@ public interface ScheduleService {
 
     // 删除排班信息
     void remove(String hoscode, String hosScheduleId);
+
+    // 根据医院编号hoscode和科室编号depcode进行查询
+    Map<String, Object> getScheduleRule(Long page, Long limit, String hoscode, String depcode);
+
+    // 根据医院编号，科室编号和工作日期，查询排班的详细信息
+    List<Schedule> getDetailSchedule(String hoscode, String depcode, String workDate);
 }

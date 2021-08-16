@@ -14,7 +14,6 @@ import com.lms.yygh.model.hosp.Hospital;
 import com.lms.yygh.model.hosp.Schedule;
 import com.lms.yygh.vo.hosp.DepartmentQueryVo;
 import com.lms.yygh.vo.hosp.ScheduleQueryVo;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;

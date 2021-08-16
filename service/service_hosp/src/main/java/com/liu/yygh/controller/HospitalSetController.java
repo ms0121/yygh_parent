@@ -24,7 +24,7 @@ import java.util.Random;
 @Api(tags = "医院设置管理")
 @RestController
 @RequestMapping("/admin/hosp/hospitalSet")
-@CrossOrigin   // 允许跨域
+//@CrossOrigin   // 允许跨域 // 实现跨域 springcloud-gateway已经配置了跨域解决的办法
 public class HospitalSetController {
 
     @Resource

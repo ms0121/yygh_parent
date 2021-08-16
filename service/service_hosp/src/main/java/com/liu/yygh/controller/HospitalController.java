@@ -4,6 +4,7 @@
  import com.liu.yygh.service.HospitalService;
  import com.lms.yygh.model.hosp.Hospital;
  import com.lms.yygh.vo.hosp.HospitalQueryVo;
+ import io.swagger.annotations.Api;
  import io.swagger.annotations.ApiOperation;
  import org.springframework.data.domain.Page;
  import org.springframework.web.bind.annotation.*;
@@ -17,9 +18,10 @@
  * @date 2021-08-13 - 15:44
  */
 
+ @Api(tags = "医院管理功能")
 @RestController
 @RequestMapping("/admin/hosp/hospital")
-@CrossOrigin  // 解决跨区问题
+//@CrossOrigin  // 解决跨区问题// 实现跨域 springcloud-gateway已经配置了跨域解决的办法
 public class HospitalController {
 
     @Resource
