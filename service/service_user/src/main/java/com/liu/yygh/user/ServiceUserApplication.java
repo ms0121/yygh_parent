@@ -13,7 +13,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * @author lms
  * @date 2021-08-18 - 16:52
  */
-@Api(tags = "用户操作")
 @SpringBootApplication
 @ComponentScan(basePackages = "com.liu")
 //扫描mapper文件

@@ -2,6 +2,9 @@ package com.liu.yygh.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lms.yygh.model.user.UserInfo;
+import com.lms.yygh.vo.user.LoginVo;
+
+import java.util.Map;
 
 /**
  * @author lms
@@ -9,4 +12,6 @@ import com.lms.yygh.model.user.UserInfo;
  */
 public interface UserInfoService extends IService<UserInfo> {
 
+    // 用户登录验证
+    Map<String, Object> login(LoginVo loginVo);
 }

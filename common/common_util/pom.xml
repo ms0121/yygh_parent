@@ -12,9 +12,16 @@
     <artifactId>common_util</artifactId>
 
     <dependencies>
+        <!--   时间格式转换     -->
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
+        </dependency>
+
+        <!--  JWT      -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
         </dependency>
     </dependencies>
 
