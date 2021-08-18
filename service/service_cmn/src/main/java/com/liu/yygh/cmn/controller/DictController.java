@@ -27,7 +27,7 @@ public class DictController {
     private DictService dictService;
 
 
-
+    // 根据dictCode获取下级节点
     @ApiOperation(value = "根据dictCode获取下级节点")
     @GetMapping("findByDictCode/{dictCode}")
     public Result findByDictCode(@PathVariable String dictCode){
@@ -36,6 +36,7 @@ public class DictController {
     }
 
 
+    // 数据导入
     @ApiOperation(value = "数据字典导入")
     @PostMapping("importData")
     public Result importDict(MultipartFile file){
@@ -69,16 +70,10 @@ public class DictController {
         return dictName;
     }
 
-
     // 根据value进行查询每个dict记录的name属性
     @GetMapping("getName/{value}")
     public String getName(@PathVariable("value") String value){
         String dictName = dictService.getDictName("", value);
         return dictName;
     }
-
-
-
-
-
 }

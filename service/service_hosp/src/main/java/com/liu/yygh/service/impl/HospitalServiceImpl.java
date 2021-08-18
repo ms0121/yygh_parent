@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -136,8 +137,32 @@ public class HospitalServiceImpl implements HospitalService {
         return null;
     }
 
+    // 根据医院名称进行模糊查询医院的信息
+    @Override
+    public List<Hospital> findByHosName(String hosname) {
+        // mongodb会自动根据函数名进行构建查询条件信息，like表示模糊查询
+        List<Hospital> list = hospitalRepository.findHospitalByHosnameLike(hosname);
+        return list;
+    }
+
+    // 根据医院编号获取医院预约挂号详情
+    @Override
+    public Map<String, Object> item(String hoscode) {
+        HashMap<String, Object> result = new HashMap<>();
+        // 先根据hoscode从mongodb中获取到hospital，然后设置hospital的医院等级和其他的属性信息
+        // 医院详情信息
+        Hospital hospital = this.setHospitalHosType(this.getByHoscode(hoscode));
+        result.put("hospital", hospital);
+
+        // 查询当前医院的预约规则
+        result.put("bookingRule", hospital.getBookingRule());
+        // 不需要重复返回预约规则该属性信息
+        hospital.setBookingRule(null);
+        return result;
+    }
+
     // 设置医院的等级信息
-    // 处查询list集合，遍历进行
+    // 查询list集合，遍历进行
     private Hospital setHospitalHosType(Hospital hospital) {
         // 根据dictCode和value获取医院的名称（连表从mongodb和mysql中进行查询）
         String hostypeString = dictFeignClient.getName("Hostype", hospital.getHostype());
