@@ -1,0 +1,35 @@
+#微服务的端口号
+server:
+  port:
+
+
+spring:
+  #微服务的名称
+  application:
+    name: service-user
+
+  #环境配置
+  profiles:
+    active: dev
+
+  # 连接mysql数据库
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/yygh_user?characterEncoding=utf-8&useSSL=false
+    username: root
+    password:
+
+  # 返回json的全局时间格式
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+  #服务注册/发现中心的地址
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+
+# xml文件的路径
+mybatis-plus:
+  mapper-locations: classpath:com/liu/yygh/user/mapper/xml/*.xml

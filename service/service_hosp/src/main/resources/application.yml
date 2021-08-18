@@ -64,7 +64,7 @@ spring:
 
 #配置mapper xml问价的路径信息
 mybatis-plus:
-  mapper-locations: classpath:com/liu/yygh/mapper/xml/*.xml
+  mapper-locations: classpath:com/liu/yygh/user/mapper/xml/*.xml
 
 
 

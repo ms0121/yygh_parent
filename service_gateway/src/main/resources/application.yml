@@ -31,6 +31,10 @@ spring:
         predicates:   # 设置路由断言,代理 servicer Id 为 auth-service的/auth/路径
         - Path=/*/cmn/**
 
+      - id: service-user    # 设置路由id
+        uri: lb://service-user   # #设置路由的uri
+        predicates:   # 设置路由断言,代理 servicer Id 为 auth-service的/auth/路径
+        - Path=/*/user/**
 
 
 

@@ -11,5 +11,15 @@
 
     <artifactId>service_user</artifactId>
 
+    <dependencies>
+        <!--  导入client。实现微服务的远程调用的操作   -->
+        <dependency>
+            <groupId>com.lms</groupId>
+            <artifactId>service_cmn_client</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+
 
 </project>
