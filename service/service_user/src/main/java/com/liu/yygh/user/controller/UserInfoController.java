@@ -28,6 +28,7 @@ public class UserInfoController {
     /**
      * @param loginVo 用于封装登录用户的手机，验证码等信息
      * @return
+     * 验证码的实现细节：实质就是程序自动生成的验证码，然后通过程序发送给手机，和将该验证码设置在redis缓存中(并设置过期时间)
      */
     @ApiOperation(value = "用户登录")
     @PostMapping("login")

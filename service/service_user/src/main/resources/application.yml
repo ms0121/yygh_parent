@@ -1,7 +1,6 @@
 #微服务的端口号
 server:
-  port:
-
+  port: 8203
 
 spring:
   #微服务的名称
@@ -29,6 +28,14 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+
+  #  配置redis做缓存的实现
+  redis:
+    host: 192.168.115.129
+    port: 6379
+    database: 0
+    timeout: 1800000
+
 
 # xml文件的路径
 mybatis-plus:

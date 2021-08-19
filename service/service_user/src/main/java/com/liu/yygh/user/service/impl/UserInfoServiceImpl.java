@@ -11,10 +11,12 @@ import com.liu.yygh.user.service.UserInfoService;
 import com.lms.yygh.model.user.UserInfo;
 import com.lms.yygh.vo.user.LoginVo;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +27,9 @@ import java.util.Map;
 @Service
 public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
         implements UserInfoService {
+
+    @Resource
+    private RedisTemplate<String, String> redisTemplate;
 
     // 用户登录验证
     @Override
@@ -37,7 +42,13 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
         if (StringUtils.isEmpty(phone) || StringUtils.isEmpty(code)){
             throw new YyghException(ResultCodeEnum.CODE_ERROR);
         }
-        // 3、判断手机号验证码和输入的验证码是否一致
+
+        // 3、判断手机号验证码和输入的验证码是否一致,
+        String redisCode = redisTemplate.opsForValue().get(phone);
+
+        if (!code.equals(redisCode)){
+            throw new YyghException(ResultCodeEnum.CODE_ERROR);
+        }
 
         // 4、判断是否是第一次登录：根据手机号查询数据库，如果不存在相同的手机号，就是第一次登录
         QueryWrapper<UserInfo> query = new QueryWrapper();
@@ -52,9 +63,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
             this.save(userInfo1);
         }
         // 校验当前用户是否被禁用
-        if (userInfo.getStatus() == 0){
-            throw new YyghException(ResultCodeEnum.LOGIN_DISABLED_ERROR);
-        }
+//        if (userInfo.getStatus() == 0){
+//            throw new YyghException(ResultCodeEnum.LOGIN_DISABLED_ERROR);
+//        }
         // 5、不是第一次登录，直接登录
         HashMap<String, Object> result = new HashMap<>();
         // 6、返回登录信息
