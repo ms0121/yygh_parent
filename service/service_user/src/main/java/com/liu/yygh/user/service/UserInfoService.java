@@ -14,4 +14,7 @@ public interface UserInfoService extends IService<UserInfo> {
 
     // 用户登录验证
     Map<String, Object> login(LoginVo loginVo);
+
+    // 查询数据库中是否存在当前登录微信的信息
+    UserInfo selectWxInfoOpenid(String openId);
 }

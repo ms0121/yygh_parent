@@ -39,29 +39,45 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
         String code = loginVo.getCode();
 
         // 2、判断手机号和验证码是否为空
-        if (StringUtils.isEmpty(phone) || StringUtils.isEmpty(code)){
+        if (StringUtils.isEmpty(phone) || StringUtils.isEmpty(code)) {
             throw new YyghException(ResultCodeEnum.CODE_ERROR);
         }
 
         // 3、判断手机号验证码和输入的验证码是否一致,
         String redisCode = redisTemplate.opsForValue().get(phone);
 
-        if (!code.equals(redisCode)){
+        if (!code.equals(redisCode)) {
             throw new YyghException(ResultCodeEnum.CODE_ERROR);
         }
 
-        // 4、判断是否是第一次登录：根据手机号查询数据库，如果不存在相同的手机号，就是第一次登录
-        QueryWrapper<UserInfo> query = new QueryWrapper();
-        query.eq("phone", phone);
-        UserInfo userInfo = baseMapper.selectOne(query);
-        if (userInfo == null){
-            UserInfo userInfo1 = new UserInfo();
-            userInfo1.setName("");
-            userInfo1.setPhone(phone);
-            userInfo1.setStatus(1);
-            // 调用自身的保存用户信息的方法，给新用户进行注册
-            this.save(userInfo1);
+        //绑定手机号码
+        UserInfo userInfo = null;
+        if (!StringUtils.isEmpty(loginVo.getOpenid())) {
+            // 查询数据库中openid是否存在，存在则设置手机号，否则不设置
+            userInfo = this.selectWxInfoOpenid(loginVo.getOpenid());
+            if (null != userInfo) {
+                userInfo.setPhone(loginVo.getPhone());
+                this.updateById(userInfo);
+            } else {
+                throw new YyghException(ResultCodeEnum.DATA_ERROR);
+            }
         }
+
+        if (userInfo == null) {
+            // 4、判断是否是第一次登录：根据手机号查询数据库，如果不存在相同的手机号，就是第一次登录
+            QueryWrapper<UserInfo> query = new QueryWrapper();
+            query.eq("phone", phone);
+            userInfo = baseMapper.selectOne(query);
+            if (userInfo == null) {
+                UserInfo userInfo1 = new UserInfo();
+                userInfo1.setName("");
+                userInfo1.setPhone(phone);
+                userInfo1.setStatus(1);
+                // 调用自身的保存用户信息的方法，给新用户进行注册
+                this.save(userInfo1);
+            }
+        }
+
         // 校验当前用户是否被禁用
 //        if (userInfo.getStatus() == 0){
 //            throw new YyghException(ResultCodeEnum.LOGIN_DISABLED_ERROR);
@@ -70,10 +86,10 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
         HashMap<String, Object> result = new HashMap<>();
         // 6、返回登录信息
         String name = userInfo.getName();
-        if (StringUtils.isEmpty(name)){
+        if (StringUtils.isEmpty(name)) {
             name = userInfo.getNickName();
         }
-        if (StringUtils.isEmpty(name)){
+        if (StringUtils.isEmpty(name)) {
             name = userInfo.getPhone();
         }
         // 7、返回登录用户名
@@ -85,14 +101,20 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
         return result;
     }
 
+    // 查询数据库中是否存在当前登录微信的信息
+    @Override
+    public UserInfo selectWxInfoOpenid(String openId) {
+        QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("openid", openId);
+        return baseMapper.selectOne(queryWrapper);
+    }
 
     /**
-     *
      * @return
      */
     @ApiOperation(value = "查找相应的所有的信息")
     @GetMapping("find")
-    public Result find(){
+    public Result find() {
 
         return Result.ok();
     }
