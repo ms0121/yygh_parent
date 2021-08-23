@@ -8,8 +8,10 @@ import com.liu.yygh.common.result.Result;
 import com.liu.yygh.common.result.ResultCodeEnum;
 import com.liu.yygh.user.mapper.UserInfoMapper;
 import com.liu.yygh.user.service.UserInfoService;
+import com.lms.yygh.enums.AuthStatusEnum;
 import com.lms.yygh.model.user.UserInfo;
 import com.lms.yygh.vo.user.LoginVo;
+import com.lms.yygh.vo.user.UserAuthVo;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -109,13 +111,31 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
         return baseMapper.selectOne(queryWrapper);
     }
 
+    // 实现用户认证
+    @Override
+    public void userAuth(Long userId, UserAuthVo userAuthVo) {
+        // 查询数据库中用户的信息
+        UserInfo userInfo = baseMapper.selectById(userId);
+        // 给当前的用户进行设置相应的值，然后进行更新的操作
+        userInfo.setName(userAuthVo.getName());
+        userInfo.setCertificatesType(userAuthVo.getCertificatesType());
+        userInfo.setCertificatesNo(userAuthVo.getCertificatesNo());
+        userInfo.setCertificatesUrl(userAuthVo.getCertificatesUrl());
+        // 设置当前用户的认证状态
+        userInfo.setAuthStatus(AuthStatusEnum.AUTH_RUN.getStatus());
+        // 执行更新的操作
+        baseMapper.updateById(userInfo);
+    }
+
+
+
+
     /**
      * @return
      */
     @ApiOperation(value = "查找相应的所有的信息")
     @GetMapping("find")
     public Result find() {
-
         return Result.ok();
     }
 

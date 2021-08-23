@@ -45,3 +45,8 @@ spring:
         uri: lb://service-user   # #设置路由的uri
         predicates:   # 设置路由断言,代理 servicer Id 为 auth-service的/auth/路径
         - Path=/*/ucenter/**
+
+      - id: service-oss    # 设置路由id,配置微信登录的拦截
+        uri: lb://service-oss   # #设置路由的uri
+        predicates:   # 设置路由断言,代理 servicer Id 为 auth-service的/auth/路径
+        - Path=/*/oss/**

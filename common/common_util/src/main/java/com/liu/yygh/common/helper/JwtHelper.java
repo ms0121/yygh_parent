@@ -16,7 +16,7 @@ public class JwtHelper {
     private static String tokenSignKey = "123456";
 
     /**
-     * 生成token
+     * 根据用户的id和用户名name生成token
      * @param userId
      * @param userName
      * @return
@@ -34,6 +34,7 @@ public class JwtHelper {
     }
 
 
+    // 根据jwt生成的token信息进行解析，获取用户id信息
     public static Long getUserId(String token) {
         if(StringUtils.isEmpty(token)) return null;
         Jws<Claims> claimsJws = Jwts.parser().setSigningKey(tokenSignKey).parseClaimsJws(token);
@@ -42,6 +43,7 @@ public class JwtHelper {
         return userId.longValue();
     }
 
+    // 同理获取指定的token中的用户名称信息
     public static String getUserName(String token) {
         if(StringUtils.isEmpty(token)) return "";
         Jws<Claims> claimsJws
