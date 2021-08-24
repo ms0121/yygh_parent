@@ -25,6 +25,7 @@ public interface UserInfoService extends IService<UserInfo> {
     // 实现用户认证接口
     void userAuth(Long userId, UserAuthVo userAuthVo);
 
-    // 用户列表(条件查询分页)
+    //用户列表（条件查询带分页）
     IPage<UserInfo> selectPage(Page<UserInfo> pageParam, UserInfoQueryVo userInfoQueryVo);
+
 }

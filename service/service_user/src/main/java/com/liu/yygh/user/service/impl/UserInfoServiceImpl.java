@@ -134,45 +134,50 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
     @Override
     public IPage<UserInfo> selectPage(Page<UserInfo> pageParam, UserInfoQueryVo userInfoQueryVo) {
         // 1.根据传入的userInfoQueryVo对象获取条件值
-        String name = userInfoQueryVo.getKeyword();  // 用户名称
-        Integer status = userInfoQueryVo.getStatus(); // 用户状态
-        Integer authStatus = userInfoQueryVo.getAuthStatus(); // 认证状态
-        String createTimeBegin = userInfoQueryVo.getCreateTimeBegin(); // 开始时间
-        String createTimeEnd = userInfoQueryVo.getCreateTimeEnd(); // 结束时间
+        //UserInfoQueryVo获取条件值
+        String name = userInfoQueryVo.getKeyword(); //用户名称
+        Integer status = userInfoQueryVo.getStatus();//用户状态
+        Integer authStatus = userInfoQueryVo.getAuthStatus(); //认证状态
+        String createTimeBegin = userInfoQueryVo.getCreateTimeBegin(); //开始时间
+        String createTimeEnd = userInfoQueryVo.getCreateTimeEnd(); //结束时间
+        //对条件值进行非空判断
+
 
         // 2.对条件值进行非空的判断
         // 3.构建条件查询对象
-        QueryWrapper<UserInfo> query = new QueryWrapper<>();
-        if (!StringUtils.isEmpty(name)){
-            query.eq("name", name);
+        //对条件值进行非空判断
+        QueryWrapper<UserInfo> wrapper = new QueryWrapper<>();
+        if (!StringUtils.isEmpty(name)) {
+            wrapper.like("name", name);
         }
-        if (!StringUtils.isEmpty(status)){
-            query.eq("status", status);
+        if (!StringUtils.isEmpty(status)) {
+            wrapper.eq("status", status);
         }
-        if (!StringUtils.isEmpty(authStatus)){
-            query.eq("auth_status", authStatus);
+        if (!StringUtils.isEmpty(authStatus)) {
+            wrapper.eq("auth_status", authStatus);
         }
-        if (!StringUtils.isEmpty(createTimeBegin)){
-            query.ge("create_time", createTimeBegin);
+        if (!StringUtils.isEmpty(createTimeBegin)) {
+            wrapper.ge("create_time", createTimeBegin);
         }
-        if (!StringUtils.isEmpty(createTimeEnd)){
-            query.le("create_time", createTimeEnd);
+        if (!StringUtils.isEmpty(createTimeEnd)) {
+            wrapper.le("create_time", createTimeEnd);
         }
+
         // 调用mp的分页查询方法
-        IPage<UserInfo> pages = baseMapper.selectPage(pageParam, query);
+        IPage<UserInfo> pages = baseMapper.selectPage(pageParam, wrapper);
         // 获取Page中的所有UserInfo对象,然后设置里面的参数值
         pages.getRecords().stream().forEach(item -> {
             this.packageUserInfo(item);
         });
-        return null;
+        return pages;
     }
 
     // 封装当前的userinfo的信息
+    //编号变成对应值封装
     private UserInfo packageUserInfo(UserInfo userInfo) {
-        // 办理认证状态的编码
-        userInfo.getParam().put("authStatusString",
-                AuthStatusEnum.getStatusNameByStatus(userInfo.getAuthStatus()));
-        // 处理用户的状态 0 1
+        //处理认证状态编码
+        userInfo.getParam().put("authStatusString", AuthStatusEnum.getStatusNameByStatus(userInfo.getAuthStatus()));
+        //处理用户状态 0  1
         String statusString = userInfo.getStatus().intValue() == 0 ? "锁定" : "正常";
         userInfo.getParam().put("statusString", statusString);
         return userInfo;
