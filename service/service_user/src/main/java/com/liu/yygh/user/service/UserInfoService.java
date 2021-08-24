@@ -1,9 +1,12 @@
 package com.liu.yygh.user.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lms.yygh.model.user.UserInfo;
 import com.lms.yygh.vo.user.LoginVo;
 import com.lms.yygh.vo.user.UserAuthVo;
+import com.lms.yygh.vo.user.UserInfoQueryVo;
 
 import java.util.Map;
 
@@ -21,4 +24,7 @@ public interface UserInfoService extends IService<UserInfo> {
 
     // 实现用户认证接口
     void userAuth(Long userId, UserAuthVo userAuthVo);
+
+    // 用户列表(条件查询分页)
+    IPage<UserInfo> selectPage(Page<UserInfo> pageParam, UserInfoQueryVo userInfoQueryVo);
 }

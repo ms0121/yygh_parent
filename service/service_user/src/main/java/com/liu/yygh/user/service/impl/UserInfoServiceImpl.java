@@ -1,6 +1,8 @@
 package com.liu.yygh.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.liu.yygh.common.exception.YyghException;
 import com.liu.yygh.common.helper.JwtHelper;
@@ -12,6 +14,7 @@ import com.lms.yygh.enums.AuthStatusEnum;
 import com.lms.yygh.model.user.UserInfo;
 import com.lms.yygh.vo.user.LoginVo;
 import com.lms.yygh.vo.user.UserAuthVo;
+import com.lms.yygh.vo.user.UserInfoQueryVo;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -127,7 +130,53 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
         baseMapper.updateById(userInfo);
     }
 
+    // 用户列表(条件查询分页)
+    @Override
+    public IPage<UserInfo> selectPage(Page<UserInfo> pageParam, UserInfoQueryVo userInfoQueryVo) {
+        // 1.根据传入的userInfoQueryVo对象获取条件值
+        String name = userInfoQueryVo.getKeyword();  // 用户名称
+        Integer status = userInfoQueryVo.getStatus(); // 用户状态
+        Integer authStatus = userInfoQueryVo.getAuthStatus(); // 认证状态
+        String createTimeBegin = userInfoQueryVo.getCreateTimeBegin(); // 开始时间
+        String createTimeEnd = userInfoQueryVo.getCreateTimeEnd(); // 结束时间
 
+        // 2.对条件值进行非空的判断
+        // 3.构建条件查询对象
+        QueryWrapper<UserInfo> query = new QueryWrapper<>();
+        if (!StringUtils.isEmpty(name)){
+            query.eq("name", name);
+        }
+        if (!StringUtils.isEmpty(status)){
+            query.eq("status", status);
+        }
+        if (!StringUtils.isEmpty(authStatus)){
+            query.eq("auth_status", authStatus);
+        }
+        if (!StringUtils.isEmpty(createTimeBegin)){
+            query.ge("create_time", createTimeBegin);
+        }
+        if (!StringUtils.isEmpty(createTimeEnd)){
+            query.le("create_time", createTimeEnd);
+        }
+        // 调用mp的分页查询方法
+        IPage<UserInfo> pages = baseMapper.selectPage(pageParam, query);
+        // 获取Page中的所有UserInfo对象,然后设置里面的参数值
+        pages.getRecords().stream().forEach(item -> {
+            this.packageUserInfo(item);
+        });
+        return null;
+    }
+
+    // 封装当前的userinfo的信息
+    private UserInfo packageUserInfo(UserInfo userInfo) {
+        // 办理认证状态的编码
+        userInfo.getParam().put("authStatusString",
+                AuthStatusEnum.getStatusNameByStatus(userInfo.getAuthStatus()));
+        // 处理用户的状态 0 1
+        String statusString = userInfo.getStatus().intValue() == 0 ? "锁定" : "正常";
+        userInfo.getParam().put("statusString", statusString);
+        return userInfo;
+    }
 
 
     /**

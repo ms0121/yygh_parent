@@ -1,4 +1,4 @@
-package com.liu.yygh.user.controller;
+package com.liu.yygh.user.api;
 
 import com.liu.yygh.common.result.Result;
 import com.liu.yygh.common.utils.AuthContextHolder;

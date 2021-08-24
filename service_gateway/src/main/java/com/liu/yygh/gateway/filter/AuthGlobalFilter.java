@@ -23,14 +23,15 @@ import java.util.List;
  * <p>
  * 全局Filter，统一处理会员登录与外部不允许访问的服务
  * </p>
- *
+ * <p>
  * 三、用户认证与网关整合
  * 思路：
  * 1.	所有请求都会经过服务网关，服务网关对外暴露服务，在网关进行统一用户认证；
  * 2.	既然要在网关进行用户认证，网关得知道对哪些url进行认证，所以我们得对url制定规则
  * 3.	Api接口异步请求的，我们采取url规则匹配，如：
  * /api/auth/如凡是满足该规则的都必须用户认证
- * */
+ */
+
 /**，
  *
  * @author qy
@@ -54,9 +55,9 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             return out(response, ResultCodeEnum.PERMISSION);
         }
 
-        Long userId = this.getUserId(request);
         //api接口，异步请求，校验用户必须登录
         if (antPathMatcher.match("/api/**/auth/**", path)) {
+            Long userId = this.getUserId(request);
             if (StringUtils.isEmpty(userId)) {
                 ServerHttpResponse response = exchange.getResponse();
                 return out(response, ResultCodeEnum.LOGIN_AUTH);
