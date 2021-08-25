@@ -9,8 +9,10 @@ import com.liu.yygh.common.helper.JwtHelper;
 import com.liu.yygh.common.result.Result;
 import com.liu.yygh.common.result.ResultCodeEnum;
 import com.liu.yygh.user.mapper.UserInfoMapper;
+import com.liu.yygh.user.service.PatientService;
 import com.liu.yygh.user.service.UserInfoService;
 import com.lms.yygh.enums.AuthStatusEnum;
+import com.lms.yygh.model.user.Patient;
 import com.lms.yygh.model.user.UserInfo;
 import com.lms.yygh.vo.user.LoginVo;
 import com.lms.yygh.vo.user.UserAuthVo;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,6 +38,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
 
     @Resource
     private RedisTemplate<String, String> redisTemplate;
+
+    @Resource
+    private PatientService patientService;
 
     // 用户登录验证
     @Override
@@ -170,6 +176,42 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
             this.packageUserInfo(item);
         });
         return pages;
+    }
+
+    // 用户锁定
+    @Override
+    public void lock(Long userId, Integer status) {
+        if (status.intValue() == 0 || status.intValue() == 1) {
+            System.out.println("status = " + status);
+            UserInfo userInfo = baseMapper.selectById(userId);
+            userInfo.setStatus(status);
+            baseMapper.updateById(userInfo);
+        }
+    }
+
+    // 查询用户详情信息
+    @Override
+    public Map<String, Object> show(Long userId) {
+        HashMap<String, Object> map = new HashMap<>();
+        UserInfo userInfo = baseMapper.selectById(userId);
+        this.packageUserInfo(userInfo);
+        // 封装用户信息
+        map.put("userInfo", userInfo);
+        // 根据用户ID查询当前用户下的就诊人信息
+        List<Patient> patients = patientService.findAll(userId);
+        map.put("patientList",patients);
+        return map;
+    }
+
+    // 用户认证审批
+    @Override
+    public void approval(Long userId, Integer authStatus) {
+        // 2 表示认证通过，  -1 认证不通过
+        if (authStatus.intValue() == 2 || authStatus.intValue() == -1){
+            UserInfo userInfo = baseMapper.selectById(userId);
+            userInfo.setAuthStatus(authStatus);
+            baseMapper.updateById(userInfo);
+        }
     }
 
     // 封装当前的userinfo的信息

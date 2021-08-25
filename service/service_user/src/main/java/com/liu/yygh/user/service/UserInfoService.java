@@ -28,4 +28,12 @@ public interface UserInfoService extends IService<UserInfo> {
     //用户列表（条件查询带分页）
     IPage<UserInfo> selectPage(Page<UserInfo> pageParam, UserInfoQueryVo userInfoQueryVo);
 
+    // 用户锁定
+    void lock(Long userId, Integer status);
+
+    // 查询当前用户详情信息
+    Map<String, Object> show(Long userId);
+
+    // 用户认证审批
+    void approval(Long userId, Integer authStatus);
 }
