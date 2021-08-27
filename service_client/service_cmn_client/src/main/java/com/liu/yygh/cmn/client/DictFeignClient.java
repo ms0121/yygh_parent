@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
  * @date 2021-08-14 - 9:52
  *
  */
-
-@FeignClient("service-cmn") // 表示调用注册中心的service-cmn微服务
+// 表示调用注册中心的service-cmn微服务中的方法
+@FeignClient("service-cmn")
 @Repository
 public interface DictFeignClient {
 

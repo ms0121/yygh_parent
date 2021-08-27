@@ -8,6 +8,7 @@ import com.lms.yygh.model.hosp.Hospital;
 import com.lms.yygh.model.hosp.Schedule;
 import com.lms.yygh.vo.hosp.DepartmentVo;
 import com.lms.yygh.vo.hosp.HospitalQueryVo;
+import com.lms.yygh.vo.hosp.ScheduleOrderVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -120,5 +121,16 @@ public class HospApiController {
         Schedule schedule = scheduleService.getById(scheduleId);
         return Result.ok(schedule);
     }
+
+    //根据排班id获取预约下单数据
+    @ApiOperation(value = "根据排班id获取预约下单数据")
+    @GetMapping("inner/getScheduleOrderVo/{scheduleId}")
+    public ScheduleOrderVo getScheduleOrderVo(
+            @ApiParam(name = "scheduleId", value = "排班id", required = true)
+            @PathVariable("scheduleId") String scheduleId){
+        return scheduleService.getScheduleOrderVo(scheduleId);
+    }
+
+
 }
 
