@@ -5,6 +5,7 @@ import com.liu.yygh.service.DepartmentService;
 import com.liu.yygh.service.HospitalService;
 import com.liu.yygh.service.ScheduleService;
 import com.lms.yygh.model.hosp.Hospital;
+import com.lms.yygh.model.hosp.Schedule;
 import com.lms.yygh.vo.hosp.DepartmentVo;
 import com.lms.yygh.vo.hosp.HospitalQueryVo;
 import io.swagger.annotations.Api;
@@ -110,11 +111,14 @@ public class HospApiController {
             @PathVariable String workDate) {
         return Result.ok(scheduleService.getDetailSchedule(hoscode, depcode, workDate));
     }
+
+    // 根据排班id获取排班数据
+    @ApiOperation(value = "根据排班id获取排班数据")
+    @GetMapping("getSchedule/{scheduleId}")
+    public Result getSchedule(@ApiParam(name = "scheduleId", value = "排班id", required = true)
+                                  @PathVariable String scheduleId){
+        Schedule schedule = scheduleService.getById(scheduleId);
+        return Result.ok(schedule);
+    }
 }
-
-
-
-
-
-
 

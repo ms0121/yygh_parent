@@ -12,6 +12,7 @@ import com.lms.yygh.model.hosp.BookingRule;
 import com.lms.yygh.model.hosp.Department;
 import com.lms.yygh.model.hosp.Hospital;
 import com.lms.yygh.model.hosp.Schedule;
+import com.lms.yygh.model.user.Patient;
 import com.lms.yygh.vo.hosp.BookingScheduleRuleVo;
 import com.lms.yygh.vo.hosp.ScheduleQueryVo;
 import org.joda.time.DateTime;
@@ -293,6 +294,14 @@ public class ScheduleServiceImpl implements ScheduleService {
         return result;
     }
 
+
+    // 根据排班id从mongodb中获取排班数据
+    @Override
+    public Schedule getById(String scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId).get();
+        return this.packageSchedule(schedule);
+    }
+
     // 获取可预约日期的数据(需要进行分页)
     private IPage getListDate(Integer page, Integer limit, BookingRule bookingRule) {
         // 获取当前的放号时间，年 月 日 小时 分钟,传入的参数是 当前时间，放号时间
@@ -339,7 +348,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 
     // 给每个Schedule进行设置: 医院名称，科室名称，日期对应的星期几
-    private void packageSchedule(Schedule schedule) {
+    private Schedule packageSchedule(Schedule schedule) {
         // 设置医院的名称
         String hospname = hospitalService.getHospName(schedule.getHoscode());
         schedule.getParam().put("hospname", hospname);
@@ -351,6 +360,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         // 设置对应的星期几
         String dayOfWeek = this.getDayOfWeek(new DateTime(schedule.getWorkDate()));
         schedule.getParam().put("dayOfWeek", dayOfWeek);
+        return schedule;
     }
 
     /**
