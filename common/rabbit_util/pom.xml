@@ -3,33 +3,32 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>service</artifactId>
+        <artifactId>common</artifactId>
         <groupId>com.lms</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>service_order</artifactId>
+    <artifactId>rabbit_util</artifactId>
 
     <dependencies>
-        <!--  导入client。实现微服务的远程调用的操作   -->
+        <!--rabbitmq消息队列-->
         <dependency>
-            <groupId>com.lms</groupId>
-            <artifactId>service_cmn_client</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bus-amqp</artifactId>
         </dependency>
 
+        <!-- 时间格式  -->
         <dependency>
-            <groupId>com.lms</groupId>
-            <artifactId>servic_user_client</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>com.lms</groupId>
-            <artifactId>service_hosp_client</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-
     </dependencies>
+
+
+
 </project>

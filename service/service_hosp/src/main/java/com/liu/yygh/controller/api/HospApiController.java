@@ -3,12 +3,14 @@ package com.liu.yygh.controller.api;
 import com.liu.yygh.common.result.Result;
 import com.liu.yygh.service.DepartmentService;
 import com.liu.yygh.service.HospitalService;
+import com.liu.yygh.service.HospitalSetService;
 import com.liu.yygh.service.ScheduleService;
 import com.lms.yygh.model.hosp.Hospital;
 import com.lms.yygh.model.hosp.Schedule;
 import com.lms.yygh.vo.hosp.DepartmentVo;
 import com.lms.yygh.vo.hosp.HospitalQueryVo;
 import com.lms.yygh.vo.hosp.ScheduleOrderVo;
+import com.lms.yygh.vo.order.SignInfoVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -40,6 +42,9 @@ public class HospApiController {
 
     @Resource
     private ScheduleService scheduleService;
+
+    @Resource
+    private HospitalSetService hospitalSetService;
 
 
     /**
@@ -131,6 +136,15 @@ public class HospApiController {
         return scheduleService.getScheduleOrderVo(scheduleId);
     }
 
+
+    // 根据医院编号获取医院的签名信息
+    @ApiOperation(value = "根据医院编号获取医院的签名信息")
+    @GetMapping("inner/getSignInfoVo/{hoscode}")
+    public SignInfoVo getSignInfoVo(
+            @ApiParam(name = "hoscode", value = "医院code", required = true)
+            @PathVariable("hoscode") String hoscode) {
+        return hospitalSetService.getSignInfoVo(hoscode);
+    }
 
 }
 

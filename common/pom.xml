@@ -14,6 +14,7 @@
     <modules>
         <module>common_util</module>
         <module>service_util</module>
+        <module>rabbit_util</module>
     </modules>
 
     <!--  导入具体需要的依赖包，版本由父工程进行控制  -->
