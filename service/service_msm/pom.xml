@@ -21,6 +21,13 @@
             <artifactId>java-sms-sdk</artifactId>
             <version>1.0.4</version>
         </dependency>
+
+        <!--     使用rabbitmq消息队列，实现消息的发送   -->
+        <dependency>
+            <groupId>com.lms</groupId>
+            <artifactId>rabbit_util</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>

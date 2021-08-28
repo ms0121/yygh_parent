@@ -36,6 +36,14 @@ spring:
         server-addr: 127.0.0.1:8848
 
 
+## rabbitmq的地址
+  rabbitmq:
+    host: 192.168.115.129
+    port: 5672
+    username: guest
+    password: guest
+
+
 ##设置sentinel地址
 #    sentinel:
 #      transport:
@@ -49,12 +57,8 @@ spring:
 #      database: yygh_hosp
 #
 #
-## rabbitmq的地址
-#  rabbitmq:
-#    host: 127.0.0.1
-#    port: 5672
-#    username: guest
-#    password: guest
+
+
 #
 #
 ## 开启sentinel，用于服务降级

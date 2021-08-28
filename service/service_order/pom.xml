@@ -31,5 +31,11 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
+        <!-- 引入rabbitmq的组件 -->
+        <dependency>
+            <groupId>com.lms</groupId>
+            <artifactId>rabbit_util</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>

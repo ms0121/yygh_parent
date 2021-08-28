@@ -357,6 +357,13 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule>
 
     }
 
+    // 更新排班信息，用于mq
+    @Override
+    public void update(Schedule schedule) {
+        schedule.setUpdateTime(new Date());
+        scheduleRepository.save(schedule);
+    }
+
     // 获取可预约日期的数据(需要进行分页)
     private IPage getListDate(Integer page, Integer limit, BookingRule bookingRule) {
         // 获取当前的放号时间，年 月 日 小时 分钟,传入的参数是 当前时间，放号时间
