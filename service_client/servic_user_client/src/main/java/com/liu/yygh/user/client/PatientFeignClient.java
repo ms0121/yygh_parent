@@ -1,6 +1,5 @@
 package com.liu.yygh.user.client;
 
-import com.liu.yygh.common.result.Result;
 import com.lms.yygh.model.user.Patient;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Repository;
@@ -17,5 +16,5 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface PatientFeignClient {
     // 根据就诊人id获取就诊人信息
     @GetMapping("/api/user/patient/inner/get/{id}")
-    public Patient getPatientOrder(@PathVariable("id") Long id);
+    Patient getPatientOrder(@PathVariable("id") Long id);
 }

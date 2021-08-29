@@ -15,11 +15,13 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @ComponentScan(basePackages = "com.liu")
+//扫描mapper文件
+@MapperScan("com.liu.yygh.order.mapper")
+//开启swagger2和服务注册与发现以及远程调用
 @EnableSwagger2
 @EnableDiscoveryClient
 @EnableFeignClients(basePackages = "com.liu")
-@MapperScan("com.liu.yygh.order.mapper")
-public class ServiceOrderApplication {
+public class ServiceOrderApplication{
     public static void main(String[] args) {
         SpringApplication.run(ServiceOrderApplication.class, args);
     }

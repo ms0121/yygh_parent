@@ -2,6 +2,8 @@ package com.liu.yygh.order.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.liu.common.rabbit.constant.MqConst;
+import com.liu.common.rabbit.service.RabbitService;
 import com.liu.yygh.common.exception.YyghException;
 import com.liu.yygh.common.helper.HttpRequestHelper;
 import com.liu.yygh.common.result.ResultCodeEnum;
@@ -13,6 +15,8 @@ import com.lms.yygh.enums.OrderStatusEnum;
 import com.lms.yygh.model.order.OrderInfo;
 import com.lms.yygh.model.user.Patient;
 import com.lms.yygh.vo.hosp.ScheduleOrderVo;
+import com.lms.yygh.vo.msm.MsmVo;
+import com.lms.yygh.vo.order.OrderMqVo;
 import com.lms.yygh.vo.order.SignInfoVo;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
@@ -38,6 +42,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderInfo>
 
     @Resource
     private HospitalFeignClient hospitalFeignClient;
+
+    @Resource
+    private RabbitService rabbitService;
 
     // 创建订单
     @Override
@@ -122,7 +129,33 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderInfo>
             Integer reservedNumber = jsonObject.getInteger("reservedNumber");
             //排班剩余预约数
             Integer availableNumber = jsonObject.getInteger("availableNumber");
+
             //发送mq信息更新号源和短信通知
+            // 发送mq信息更新号源信息
+            OrderMqVo orderMqVo = new OrderMqVo();
+            orderMqVo.setScheduleId(scheduleId);
+            orderMqVo.setReservedNumber(reservedNumber);
+            orderMqVo.setAvailableNumber(availableNumber);
+
+            // 短信提示
+            MsmVo msmVo = new MsmVo();
+            msmVo.setPhone(orderInfo.getPatientPhone());
+            String reserveDate =
+                    new DateTime(orderInfo.getReserveDate()).toString("yyyy-MM-dd")
+                            + (orderInfo.getReserveTime()==0 ? "上午": "下午");
+            Map<String,Object> param = new HashMap<String,Object>(){{
+                put("title", orderInfo.getHosname()+"|"+orderInfo.getDepname()+"|"+orderInfo.getTitle());
+                put("amount", orderInfo.getAmount());
+                put("reserveDate", reserveDate);
+                put("name", orderInfo.getPatientName());
+                put("quitTime", new DateTime(orderInfo.getQuitTime()).toString("yyyy-MM-dd HH:mm"));
+            }};
+            msmVo.setParam(param);
+            orderMqVo.setMsmVo(msmVo);
+
+            // 使用rabbitmq进行发送消息（设置指定的交换机，路由key，需要发送的消息）
+            rabbitService.sendMessage(MqConst.EXCHANGE_DIRECT_ORDER, MqConst.ROUTING_ORDER, orderMqVo);
+
         } else {
             throw new YyghException(result.getString("message"), ResultCodeEnum.FAIL.getCode());
         }

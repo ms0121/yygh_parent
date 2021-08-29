@@ -23,7 +23,6 @@ public class PatientApiController {
     @Resource
     private PatientService patientService;
 
-
     /**
      * 根据当前登录用户的ID信息来获取病人信息
      * @param request
@@ -81,4 +80,7 @@ public class PatientApiController {
     public Patient getPatientOrder(@PathVariable Long id){
         return patientService.getPatientById(id);
     }
+
+
+
 }

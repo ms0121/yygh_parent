@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  * @date 2021-08-27 - 20:15
  */
 
-@FeignClient(value = "service_user")
+@FeignClient(value = "service-hosp")
 @Repository
 public interface HospitalFeignClient {
 

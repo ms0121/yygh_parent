@@ -74,14 +74,13 @@ public class MsmServiceImpl implements MsmService {
 //        }
     }
 
-    // mq使用mq封装信息
+    // 对mq进行封装信息
     @Override
     public boolean send(MsmVo msmVo) {
         // 手机号不为空
         if (!StringUtils.isEmpty(msmVo.getPhone())){
             String code = (String) msmVo.getParam().get("code");
-            boolean isSend = this.send(msmVo.getPhone(), code);
-            return isSend;
+            return this.send(msmVo.getPhone(), code);
         }
         return false;
     }
