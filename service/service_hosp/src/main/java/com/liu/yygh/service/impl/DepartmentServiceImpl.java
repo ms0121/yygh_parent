@@ -41,7 +41,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         // 2.查询mongodb数据库中是否存在该科室信息
         Department tempDepartment =
-                departmentRepository.getDepartmentByhoscodeAndDepcode(department.getHoscode(), department.getDepcode());
+                departmentRepository.getDepartmentByHoscodeAndDepcode(department.getHoscode(), department.getDepcode());
 
         // 判断当前的Department是修改还是添加
         if (tempDepartment != null){
@@ -99,7 +99,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public void remove(String hoscode, String depcode) {
         // 根据医院编号和科室编号从mongodb中查询科室信息
-        Department department = departmentRepository.getDepartmentByhoscodeAndDepcode(hoscode, depcode);
+        Department department = departmentRepository.getDepartmentByHoscodeAndDepcode(hoscode, depcode);
         if (department != null){
             departmentRepository.deleteById(department.getId());
         }
@@ -162,7 +162,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     // 根据医院编号和科室编号获取科室的名称
     @Override
     public String getDepName(String hoscode, String depcode) {
-        Department department = departmentRepository.getDepartmentByhoscodeAndDepcode(hoscode, depcode);
+        Department department = departmentRepository.getDepartmentByHoscodeAndDepcode(hoscode, depcode);
         if (department != null){
             return department.getDepname();
         }
@@ -173,6 +173,6 @@ public class DepartmentServiceImpl implements DepartmentService {
     // 根据科室编号和医院编号，查询科室信息
     @Override
     public Department getDepartment(String hoscode, String depcode) {
-        return departmentRepository.getDepartmentByhoscodeAndDepcode(hoscode, depcode);
+        return departmentRepository.getDepartmentByHoscodeAndDepcode(hoscode, depcode);
     }
 }

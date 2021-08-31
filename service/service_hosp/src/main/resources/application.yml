@@ -44,6 +44,21 @@ spring:
     password: guest
 
 
+#  配置redis做缓存的实现
+  redis:
+    host: 192.168.115.129
+    port: 6379
+    database: 0
+    timeout: 1800000
+
+    lettuce:
+      pool:
+        max-active: 20
+        max-wait: -1
+        #最大阻塞等待时间(负数表示没限制)
+        max-idle: 5
+        min-idle: 0
+
 ##设置sentinel地址
 #    sentinel:
 #      transport:

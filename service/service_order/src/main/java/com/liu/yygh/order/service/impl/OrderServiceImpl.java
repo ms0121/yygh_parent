@@ -61,6 +61,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderInfo>
 
         // 获取签名信息
         SignInfoVo signInfoVo = hospitalFeignClient.getSignInfoVo(scheduleOrderVo.getHoscode());
+
+        System.out.println("=============================");
+        System.out.println("signInfoVo.getSignKey() = " + signInfoVo.getApiUrl());
+        System.out.println("=============================");
+
+
         // 将其添加到订单表中
         OrderInfo orderInfo = new OrderInfo();
         // 将排班表中的信息复制到orderInfo中
@@ -106,43 +112,43 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderInfo>
         String sign = HttpRequestHelper.getSign(paramMap, signInfoVo.getSignKey());
         paramMap.put("sign", sign);
 
-        // 请求医院接口，实现下单操作
+        System.out.println("================================");
+        System.out.println("signInfoVo.getApiUrl() = " + signInfoVo.getApiUrl());
+
+        //请求医院系统接口
         JSONObject result = HttpRequestHelper.sendRequest(paramMap, signInfoVo.getApiUrl() + "/order/submitOrder");
-        // 根据返回的json数据的状态码code进行判断是否下单成功
-        if (result.getInteger("code") == 200){
+
+        // 根据返回的json数据信息判断相应的code是否成功
+        if(result.getInteger("code")==200) {
             JSONObject jsonObject = result.getJSONObject("data");
-            // 预约记录唯一的标识(医院预约记录主键)
+            //预约记录唯一标识（医院预约记录主键）
             String hosRecordId = jsonObject.getString("hosRecordId");
-            // 预约的顺序
-            Integer number = jsonObject.getInteger("number");
-            // 取号时间
-            String fetchTime = jsonObject.getString("fetchTime");
-            // 取号地址
-            String fetchAddress = jsonObject.getString("fetchAddress");
-            // 更新订单信息
+            //预约序号
+            Integer number = jsonObject.getInteger("number");;
+            //取号时间
+            String fetchTime = jsonObject.getString("fetchTime");;
+            //取号地址
+            String fetchAddress = jsonObject.getString("fetchAddress");;
+            //更新订单
             orderInfo.setHosRecordId(hosRecordId);
             orderInfo.setNumber(number);
             orderInfo.setFetchTime(fetchTime);
             orderInfo.setFetchAddress(fetchAddress);
             baseMapper.updateById(orderInfo);
-            // 排班可预约数
+            //排班可预约数
             Integer reservedNumber = jsonObject.getInteger("reservedNumber");
             //排班剩余预约数
             Integer availableNumber = jsonObject.getInteger("availableNumber");
-
-            //发送mq信息更新号源和短信通知
-            // 发送mq信息更新号源信息
+            //发送mq消息，号源更新和短信通知
+            //发送mq信息更新号源
             OrderMqVo orderMqVo = new OrderMqVo();
             orderMqVo.setScheduleId(scheduleId);
             orderMqVo.setReservedNumber(reservedNumber);
             orderMqVo.setAvailableNumber(availableNumber);
-
-            // 短信提示
+            //短信提示
             MsmVo msmVo = new MsmVo();
             msmVo.setPhone(orderInfo.getPatientPhone());
-            String reserveDate =
-                    new DateTime(orderInfo.getReserveDate()).toString("yyyy-MM-dd")
-                            + (orderInfo.getReserveTime()==0 ? "上午": "下午");
+            String reserveDate = new DateTime(orderInfo.getReserveDate()).toString("yyyy-MM-dd") + (orderInfo.getReserveTime()==0 ? "上午" : "下午");
             Map<String,Object> param = new HashMap<String,Object>(){{
                 put("title", orderInfo.getHosname()+"|"+orderInfo.getDepname()+"|"+orderInfo.getTitle());
                 put("amount", orderInfo.getAmount());
@@ -153,14 +159,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderInfo>
             msmVo.setParam(param);
             orderMqVo.setMsmVo(msmVo);
 
-            // 使用rabbitmq进行发送消息（设置指定的交换机，路由key，需要发送的消息）
             rabbitService.sendMessage(MqConst.EXCHANGE_DIRECT_ORDER, MqConst.ROUTING_ORDER, orderMqVo);
-
         } else {
             throw new YyghException(result.getString("message"), ResultCodeEnum.FAIL.getCode());
         }
-        // 返回订单编号Id
         return orderInfo.getId();
+    }
+
+
+    // 根据订单id查询订单详情信息
+    @Override
+    public OrderInfo getOrder(Long orderId) {
+        OrderInfo orderInfo = baseMapper.selectById(orderId);
+        return this.packOrderInfo(orderInfo);
+    }
+
+    // 对订单信息的封装
+    private OrderInfo packOrderInfo(OrderInfo orderInfo) {
+        orderInfo.getParam().put("orderStatusString", OrderStatusEnum.getStatusNameByStatus(orderInfo.getOrderStatus()));
+        return orderInfo;
     }
 }
 

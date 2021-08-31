@@ -2,12 +2,10 @@ package com.liu.yygh.order.api;
 
 import com.liu.yygh.common.result.Result;
 import com.liu.yygh.order.service.OrderService;
+import com.lms.yygh.model.order.OrderInfo;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -32,6 +30,13 @@ public class OrderApiController {
                             @PathVariable Long patientId) {
         Long orderId = orderService.saveOrder(scheduleId, patientId);
         return Result.ok(orderId);
+    }
+
+    // 根据订单id查询订单详情信息
+    @GetMapping("auth/getOrders/{orderId")
+    public Result getOrder(@PathVariable Long orderId){
+        OrderInfo orderInfo = orderService.getOrder(orderId);
+        return Result.ok(orderInfo);
     }
 
 

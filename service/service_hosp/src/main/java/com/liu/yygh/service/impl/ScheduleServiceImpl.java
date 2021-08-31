@@ -212,45 +212,38 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule>
         List<Date> dateList = iPage.getRecords();
 
         // 从mongodb中获取可预约日期里面科室的剩余预约数
-        // 先构建查询条件
-        Criteria criteria = Criteria.where("hoscode").is(hoscode).and("depcode").is(depcode)
-                .and("workDate").in(dateList);
-
+        //获取可预约日期科室剩余预约数
+        Criteria criteria = Criteria.where("hoscode").is(hoscode).and("depcode").is(depcode).and("workDate").in(dateList);
         Aggregation agg = Aggregation.newAggregation(
                 Aggregation.match(criteria),
-                Aggregation.group("workDate").first("workDate").as("workDate")
+                Aggregation.group("workDate")//分组字段
+                        .first("workDate").as("workDate")
                         .count().as("docCount")
                         .sum("availableNumber").as("availableNumber")
                         .sum("reservedNumber").as("reservedNumber")
         );
-
-        AggregationResults<BookingScheduleRuleVo> aggregateResult =
-                mongoTemplate.aggregate(agg, Schedule.class, BookingScheduleRuleVo.class);
-        List<BookingScheduleRuleVo> scheduleVoList = aggregateResult.getMappedResults();
+        AggregationResults<BookingScheduleRuleVo> aggregationResults = mongoTemplate.aggregate(agg, Schedule.class, BookingScheduleRuleVo.class);
+        List<BookingScheduleRuleVo> scheduleVoList = aggregationResults.getMappedResults();
+        //获取科室剩余预约数
 
         //合并数据 将统计数据ScheduleVo根据“安排日期”合并到BookingRuleVo
         Map<Date, BookingScheduleRuleVo> scheduleVoMap = new HashMap<>();
-        if(!CollectionUtils.isEmpty(scheduleVoList)) {
-            scheduleVoMap = scheduleVoList.stream().collect(Collectors.toMap(BookingScheduleRuleVo::getWorkDate,
-                    BookingScheduleRuleVo -> BookingScheduleRuleVo));
+        if (!CollectionUtils.isEmpty(scheduleVoList)) {
+            scheduleVoMap = scheduleVoList.stream().collect(Collectors.toMap(BookingScheduleRuleVo::getWorkDate, BookingScheduleRuleVo -> BookingScheduleRuleVo));
         }
-
-        // 获取可预约的排班规则
-        ArrayList<BookingScheduleRuleVo> bookingScheduleRuleVoList = new ArrayList<>();
+        //获取可预约排班规则
+        List<BookingScheduleRuleVo> bookingScheduleRuleVoList = new ArrayList<>();
         for (int i = 0, len = dateList.size(); i < len; i++) {
             Date date = dateList.get(i);
-            // 从map集合根据key日期获取value值
+
             BookingScheduleRuleVo bookingScheduleRuleVo = scheduleVoMap.get(date);
-            // 如果当前没有排班医生
-            if (bookingScheduleRuleVo == null){
+            if (null == bookingScheduleRuleVo) { // 说明当天没有排班医生
                 bookingScheduleRuleVo = new BookingScheduleRuleVo();
-                // 设置就诊医生的人数
+                //就诊医生人数
                 bookingScheduleRuleVo.setDocCount(0);
-                // 设置科室剩余预约数，-1表示无号
+                //科室剩余预约数  -1表示无号
                 bookingScheduleRuleVo.setAvailableNumber(-1);
             }
-
-            // 设置相关日期
             bookingScheduleRuleVo.setWorkDate(date);
             bookingScheduleRuleVo.setWorkDateMd(date);
             //计算当前预约日期为周几
@@ -258,15 +251,15 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule>
             bookingScheduleRuleVo.setDayOfWeek(dayOfWeek);
 
             //最后一页最后一条记录为即将预约   状态 0：正常 1：即将放号 -1：当天已停止挂号
-            if(i == len-1 && page == iPage.getPages()) {
+            if (i == len - 1 && page == iPage.getPages()) {
                 bookingScheduleRuleVo.setStatus(1);
             } else {
                 bookingScheduleRuleVo.setStatus(0);
             }
             //当天预约如果过了停号时间， 不能预约
-            if(i == 0 && page == 1) {
+            if (i == 0 && page == 1) {
                 DateTime stopTime = this.getDateTime(new Date(), bookingRule.getStopTime());
-                if(stopTime.isBeforeNow()) {
+                if (stopTime.isBeforeNow()) {
                     //停止预约
                     bookingScheduleRuleVo.setStatus(-1);
                 }
@@ -282,7 +275,7 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule>
         //医院名称
         baseMap.put("hosname", hospitalService.getHospName(hoscode));
         //科室
-        Department department =departmentService.getDepartment(hoscode, depcode);
+        Department department = departmentService.getDepartment(hoscode, depcode);
         //大科室名称
         baseMap.put("bigname", department.getBigname());
         //科室名称
@@ -310,18 +303,20 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule>
     public ScheduleOrderVo getScheduleOrderVo(String scheduleId) {
         ScheduleOrderVo scheduleOrderVo = new ScheduleOrderVo();
         // 获取排班信息
-        Schedule schedule = baseMapper.selectById(scheduleId);
-        if (schedule == null){
+//        Schedule schedule = baseMapper.selectById(scheduleId);
+        Schedule schedule = scheduleRepository.findById(scheduleId).get();
+
+        if (schedule == null) {
             throw new YyghException(ResultCodeEnum.PARAM_ERROR);
         }
         // 获取预约规则信息
         Hospital hospital = hospitalService.getByHoscode(schedule.getHoscode());
-        if (hospital == null){
+        if (hospital == null) {
             throw new YyghException(ResultCodeEnum.PARAM_ERROR);
         }
         // 获取预约信息
         BookingRule bookingRule = hospital.getBookingRule();
-        if (bookingRule == null){
+        if (bookingRule == null) {
             throw new YyghException(ResultCodeEnum.PARAM_ERROR);
         }
 
@@ -368,33 +363,27 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule>
     private IPage getListDate(Integer page, Integer limit, BookingRule bookingRule) {
         // 获取当前的放号时间，年 月 日 小时 分钟,传入的参数是 当前时间，放号时间
         DateTime releaseTime = this.getDateTime(new Date(), bookingRule.getReleaseTime());
-        // 获取预约周期
-        Integer cycle = bookingRule.getCycle();
-        // 如果当天放号时间已经过去，预约周期从后一天开始计算，周期+1
-        if (releaseTime.isBeforeNow()) {
-            cycle += 1;
-        }
-        // 获取可预约的所有日期，最后一天显示即将放号
-        ArrayList<Date> dateList = new ArrayList<>();
+//预约周期
+        int cycle = bookingRule.getCycle();
+//如果当天放号时间已过，则预约周期后一天为即将放号时间，周期加1
+        if(releaseTime.isBeforeNow()) cycle += 1;
+//可预约所有日期，最后一天显示即将放号倒计时
+        List<Date> dateList = new ArrayList<>();
         for (int i = 0; i < cycle; i++) {
+//计算当前预约日期
             DateTime curDateTime = new DateTime().plusDays(i);
             String dateString = curDateTime.toString("yyyy-MM-dd");
             dateList.add(new DateTime(dateString).toDate());
         }
-
-        // 因为预约周期是不同的，每页显示日期最多7天数据，超过7天进行分页
-        ArrayList<Date> pageDateList = new ArrayList<>();
-        int start = (page - 1) * limit;
-        int end = (page - 1) * limit + limit;
-        // 如果可以显示的数据小于7，直接显示，不需要进行分页
-        if (end > dateList.size()) {
-            end = dateList.size();
-        }
+//日期分页，由于预约周期不一样，页面一排最多显示7天数据，多了就要分页显示
+        List<Date> pageDateList = new ArrayList<>();
+        int start = (page-1)*limit;
+        int end = (page-1)*limit+limit;
+        if(end >dateList.size()) end = dateList.size();
         for (int i = start; i < end; i++) {
             pageDateList.add(dateList.get(i));
         }
-        // 如果可以显示的数据大于7，需要进行分页
-        IPage<Date> iPage = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(page, 7, dateList.size());
+        IPage<Date> iPage = new com.baomidou.mybatisplus.extension.plugins.pagination.Page(page, 7, dateList.size());
         iPage.setRecords(pageDateList);
         return iPage;
     }
@@ -403,7 +392,7 @@ public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule>
      * 将Date日期（yyyy-MM-dd HH:mm）转换为DateTime
      */
     private DateTime getDateTime(Date date, String timeString) {
-        String dateTimeString = new DateTime(date).toString("yyyy-MM-dd") + " " + timeString;
+        String dateTimeString = new DateTime(date).toString("yyyy-MM-dd") + " "+ timeString;
         DateTime dateTime = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").parseDateTime(dateTimeString);
         return dateTime;
     }

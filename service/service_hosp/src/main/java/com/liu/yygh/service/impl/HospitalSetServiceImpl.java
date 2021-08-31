@@ -42,11 +42,11 @@ public class HospitalSetServiceImpl extends ServiceImpl<HospitalSetMapper, Hospi
         if (null == hospitalSet){
             throw new YyghException(ResultCodeEnum.HOSPITAL_OPEN);
         }
-
         // 设置返回的签名信息
         SignInfoVo signInfoVo = new SignInfoVo();
         signInfoVo.setApiUrl(hospitalSet.getApiUrl());
         signInfoVo.setSignKey(hospitalSet.getSignKey());
+        System.out.println("hospitalSet.getApiUrl() = " + hospitalSet.getApiUrl());
         return signInfoVo;
     }
 }

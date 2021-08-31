@@ -115,7 +115,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
         }
     }
 
-    // 查询dictName
+    // 根据dictCode和value进行查询dictName
     @Override
     public String getDictName(String dictCode, String value) {
         // 如果dictCode为空，直接根据value进行查询
@@ -125,16 +125,15 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
             Dict dict = baseMapper.selectOne(wrapper);
             return dict.getName();
         } else {
-            // dict不为空，根据dictCode和value进行查询
-            // 首先根据dictCode查出dict对象，得到dict的id值
+            // dictCode不为空，根据dictCode和value进行查询
+            //根据dictcode查询dict对象，得到dict的id值
             Dict codeDict = this.getDictByDictCode(dictCode);
-            Long parentId = codeDict.getId();
-
-            // 根据parentId和value值进行查询医院的等级
-            Dict dict = baseMapper.selectOne(new QueryWrapper<Dict>()
-                    .eq("parent_id", parentId)
+            Long parent_id = codeDict.getId();
+            //根据parent_id和value进行查询
+            Dict finalDict = baseMapper.selectOne(new QueryWrapper<Dict>()
+                    .eq("parent_id", parent_id)
                     .eq("value", value));
-            return dict.getName();
+            return finalDict.getName();
         }
     }
 
