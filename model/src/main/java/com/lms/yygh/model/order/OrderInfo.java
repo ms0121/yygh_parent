@@ -20,9 +20,9 @@ import java.util.Date;
  */
 @Data
 @ApiModel(description = "Order")
-@TableName("order_info")
+@TableName("order_info")  // 对应的数据库表
 public class OrderInfo extends BaseEntity {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	@ApiModelProperty(value = "userId")

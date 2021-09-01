@@ -1,13 +1,19 @@
 package com.liu.yygh.order.api;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.liu.yygh.common.result.Result;
+import com.liu.yygh.common.utils.AuthContextHolder;
 import com.liu.yygh.order.service.OrderService;
+import com.lms.yygh.enums.OrderStatusEnum;
 import com.lms.yygh.model.order.OrderInfo;
+import com.lms.yygh.vo.order.OrderQueryVo;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author lms
@@ -34,12 +40,32 @@ public class OrderApiController {
 
     // 根据订单id查询订单详情信息
     @GetMapping("auth/getOrders/{orderId}")
-    public Result getOrder(@PathVariable Long orderId){
+    public Result getOrder(@PathVariable Long orderId) {
         System.out.println("orderId = " + orderId);
         OrderInfo orderInfo = orderService.getOrder(orderId);
-//        System.out.println("orderInfo.getDepname() = " + orderInfo.getDepname());
         return Result.ok(orderInfo);
     }
 
+    // 订单查询（条件查询带分页）
+    @GetMapping("auth/{page}/{limit}")
+    public Result list(@PathVariable Integer page,
+                       @PathVariable Integer limit,
+                       OrderQueryVo orderQueryVo,
+                       HttpServletRequest request){
+        // 查询当前登录用户对应的订单信息
+        Long userId = AuthContextHolder.getUserId(request);
+        orderQueryVo.setUserId(userId);
+        // 构建分页对象
+        Page<OrderInfo> pageParam = new Page<>(page, limit);
+        IPage<OrderInfo> pageModel = orderService.selectPage(pageParam, orderQueryVo);
+        return Result.ok(pageModel);
+    }
 
+    // 获取订单的状态
+    // 因为订单状态我们是封装到枚举中的，页面搜索需要一个下拉列表展示，所以我们通过接口返回页面
+    @ApiOperation(value = "获取订单状态")
+    @GetMapping("auth/getStatusList")
+    public Result getStatusList() {
+        return Result.ok(OrderStatusEnum.getStatusList());
+    }
 }
