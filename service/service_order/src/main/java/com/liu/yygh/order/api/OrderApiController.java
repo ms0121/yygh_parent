@@ -33,9 +33,11 @@ public class OrderApiController {
     }
 
     // 根据订单id查询订单详情信息
-    @GetMapping("auth/getOrders/{orderId")
+    @GetMapping("auth/getOrders/{orderId}")
     public Result getOrder(@PathVariable Long orderId){
+        System.out.println("orderId = " + orderId);
         OrderInfo orderInfo = orderService.getOrder(orderId);
+//        System.out.println("orderInfo.getDepname() = " + orderInfo.getDepname());
         return Result.ok(orderInfo);
     }
 
