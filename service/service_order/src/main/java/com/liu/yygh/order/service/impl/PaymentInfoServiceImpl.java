@@ -12,6 +12,7 @@ import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @author lms
@@ -45,5 +46,12 @@ public class PaymentInfoServiceImpl extends ServiceImpl<PaymentInfoMapper, Payme
         paymentInfo.setTotalAmount(order.getAmount());
         // 向数据库中添加记录信息
         baseMapper.insert(paymentInfo);
+    }
+
+
+    //
+    @Override
+    public void paySuccess(String out_trade_no, Map<String, String> resuleMap) {
+
     }
 }

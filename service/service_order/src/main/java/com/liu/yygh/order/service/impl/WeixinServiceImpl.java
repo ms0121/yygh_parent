@@ -41,7 +41,7 @@ public class WeixinServiceImpl implements WeixinService {
         try {
             // 查询当前redis中是否存在该订单数据信息
             Map redisMap = (Map) redisTemplate.opsForValue().get(orderId.toString());
-            if (redisMap != null){
+            if (redisMap != null) {
                 return redisMap;
             }
 
@@ -86,7 +86,7 @@ public class WeixinServiceImpl implements WeixinService {
             map.put("codeUrl", resultMap.get("code_url"));
 
             // 此时resultMap.get("result_code")不为空，将其放入到redis中
-            if (resultMap.get("result_code") != null){
+            if (resultMap.get("result_code") != null) {
                 // 设置键值对和过期时间为2小时
                 redisTemplate.opsForValue().set(orderId.toString(), map, 120, TimeUnit.MINUTES);
             }
@@ -98,6 +98,42 @@ public class WeixinServiceImpl implements WeixinService {
             return null;
         }
 
+    }
+
+
+    // 调用微信接口实现支付状态的查询
+    @Override
+    public Map<String, String> queryPayStatus(Long orderId) {
+        try {
+            // 1.根据orderId查询订单信息
+            OrderInfo orderInfo = orderService.getById(orderId);
+            // 2.封装提交的参数
+            HashMap paramMap = new HashMap<>();
+            paramMap.put("appid", ConstantPropertiesUtils.APPID);
+            paramMap.put("mch_id", ConstantPropertiesUtils.PARTNER);
+            // 订单编号
+            paramMap.put("out_trade_no", orderInfo.getOutTradeNo());
+            // 微信接口随机生成的字符串
+            paramMap.put("nonce_str", WXPayUtil.generateNonceStr());
+
+            // 3.向微信地址发送请求，设置请求内容信息
+            HttpClient client = new HttpClient("https://api.mch.weixin.qq.com/pay/orderquery");
+            // 将map集合转为xml格式数据，并使用商户的key进行加密设置
+            client.setXmlParam(WXPayUtil.generateSignedXml(paramMap, ConstantPropertiesUtils.PARTNERKEY));
+            client.setHttps(true);
+            client.post();
+
+            // 4.得到微信接口返回的xml数据信息，并将其转为map集合
+            String xml = client.getContent();
+            Map<String, String> resultMap = WXPayUtil.xmlToMap(xml);
+
+            // 5.把接口数据进行返回
+            return resultMap;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
 
