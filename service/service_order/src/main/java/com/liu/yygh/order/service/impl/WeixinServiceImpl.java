@@ -51,7 +51,7 @@ public class WeixinServiceImpl implements WeixinService {
             paymentService.savePaymentInfo(order, PaymentTypeEnum.WEIXIN.getStatus());
             // 3.设置参数，
             // 把参数转换为xml格式，使用商户的key进行加密设置
-            HashMap paramMap = new HashMap<>();
+            HashMap<String, String> paramMap = new HashMap<>();
             paramMap.put("appid", ConstantPropertiesUtils.APPID);
             paramMap.put("mch_id", ConstantPropertiesUtils.PARTNER);
             paramMap.put("nonce_str", WXPayUtil.generateNonceStr());
@@ -76,28 +76,25 @@ public class WeixinServiceImpl implements WeixinService {
             String xml = client.getContent();
             // 将xml转为map集合数据，然后传到前台
             Map<String, String> resultMap = WXPayUtil.xmlToMap(xml);
-            System.out.println("resultMap = " + resultMap);
 
             // 6.封装返回的数据信息
-            HashMap map = new HashMap<>();
+            Map map = new HashMap<>();
             map.put("orderId", orderId);
             map.put("totalFee", order.getAmount());
             map.put("resultCode", resultMap.get("result_code"));
             map.put("codeUrl", resultMap.get("code_url"));
 
             // 此时resultMap.get("result_code")不为空，将其放入到redis中
-            if (resultMap.get("result_code") != null) {
+            if(null != resultMap.get("result_code")) {
                 // 设置键值对和过期时间为2小时
                 redisTemplate.opsForValue().set(orderId.toString(), map, 120, TimeUnit.MINUTES);
             }
-
             return map;
 
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return new HashMap<>();
         }
-
     }
 
 
