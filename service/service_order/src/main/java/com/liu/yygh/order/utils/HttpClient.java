@@ -129,7 +129,8 @@ public class HttpClient {
         try {
             if (isHttps) {
                 if(isCert) {
-                    FileInputStream inputStream = new FileInputStream(new File(""));
+                    // 需要设置为微信退款的证书信息的路径
+                    FileInputStream inputStream = new FileInputStream(new File(ConstantPropertiesUtils.CERT));
                     KeyStore keystore = KeyStore.getInstance("PKCS12");
                     char[] partnerId2charArray = certPassword.toCharArray();
                     keystore.load(inputStream, partnerId2charArray);

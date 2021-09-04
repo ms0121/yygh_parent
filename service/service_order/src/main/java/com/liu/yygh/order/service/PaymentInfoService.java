@@ -17,4 +17,7 @@ public interface PaymentInfoService extends IService<PaymentInfo> {
     // 更新订单表
     void paySuccess(String out_trade_no, Map<String, String> resuleMap);
 
+    // 获取支付记录
+    // 因为退款是根据付款记录进行操作的
+    PaymentInfo getPaymentInfo(Long orderId, Integer paymentType);
 }

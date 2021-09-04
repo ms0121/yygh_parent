@@ -102,4 +102,19 @@ public class PaymentInfoServiceImpl extends ServiceImpl<PaymentInfoMapper, Payme
         // 更新支付状态
         HttpRequestHelper.sendRequest(reqMap, signInfoVo.getApiUrl() + "/order/updatePayStatus");
     }
+
+    /**
+     * 查询支付状态
+     * @param orderId 订单id
+     * @param paymentType 支付状态
+     * @return
+     */
+    @Override
+    public PaymentInfo getPaymentInfo(Long orderId, Integer paymentType) {
+        // 根据订单id和支付的状态进行查询订单的信息
+        QueryWrapper<PaymentInfo> wrapper = new QueryWrapper<>();
+        wrapper.eq("order_id", orderId);
+        wrapper.eq("payment_type", PaymentTypeEnum.WEIXIN.getStatus());
+        return baseMapper.selectOne(wrapper);
+    }
 }

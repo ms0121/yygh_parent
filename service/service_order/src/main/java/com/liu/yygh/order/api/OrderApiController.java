@@ -68,4 +68,36 @@ public class OrderApiController {
     public Result getStatusList() {
         return Result.ok(OrderStatusEnum.getStatusList());
     }
+
+
+    /**
+     * 完成取消预约挂号
+     * 步骤：
+     *  1.根据订单id得到订单信息
+     *  2.判断时间
+     *  3.调用医院接口实现取消预约信息
+     *  4.根据医院接口返回数据进行下面的操作
+     *      1）更新订单状态
+     *      2）调用危险退款方法
+      * @param orderId
+     * @return
+     */
+    @GetMapping("auth/cancleOrder/{orderId}")
+    public Result cancleOrder(@PathVariable Long orderId){
+        boolean flag = orderService.cancelOrder(orderId);
+        return Result.ok(flag);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

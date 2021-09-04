@@ -55,7 +55,4 @@ public class WeixinController {
         }
         return Result.ok().message("支付中");
     }
-
-
-
 }

@@ -1,17 +1,25 @@
 package com.liu.yygh.order.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
+import com.github.wxpay.sdk.WXPayConstants;
 import com.github.wxpay.sdk.WXPayUtil;
 import com.liu.yygh.order.service.OrderService;
 import com.liu.yygh.order.service.PaymentInfoService;
+import com.liu.yygh.order.service.RefundInfoService;
 import com.liu.yygh.order.service.WeixinService;
 import com.liu.yygh.order.utils.ConstantPropertiesUtils;
 import com.liu.yygh.order.utils.HttpClient;
 import com.lms.yygh.enums.PaymentTypeEnum;
+import com.lms.yygh.enums.RefundStatusEnum;
 import com.lms.yygh.model.order.OrderInfo;
+import com.lms.yygh.model.order.PaymentInfo;
+import com.lms.yygh.model.order.RefundInfo;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -33,6 +41,9 @@ public class WeixinServiceImpl implements WeixinService {
     // 用于实现订单支付在两小时内有效
     @Resource
     private RedisTemplate redisTemplate;
+
+    @Resource
+    private RefundInfoService refundInfoService;
 
 
     // 生成微信支付二维码
@@ -131,6 +142,67 @@ public class WeixinServiceImpl implements WeixinService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * 执行退款的操作
+     * @param orderId
+     * @return
+     */
+    @Override
+    public Boolean refund(Long orderId) {
+        try {
+            // 1.调用支付订单接口查询订单信息
+            PaymentInfo paymentInfo = paymentService.getPaymentInfo(orderId, PaymentTypeEnum.WEIXIN.getStatus());
+            // 2.调用退款记录接口进行保存的操作
+            RefundInfo refundInfo = refundInfoService.saveRefundInfo(paymentInfo);
+            // 3.判断是否已经完成了退款的操作
+            if (refundInfo.getRefundStatus().intValue() == RefundStatusEnum.REFUND.getStatus().intValue()){
+                return true;
+            }
+            // 否则封装退款信息
+            HashMap<String, String> paramMap = new HashMap<>();
+            paramMap.put("appid",ConstantPropertiesUtils.APPID);       //公众账号ID
+            paramMap.put("mch_id",ConstantPropertiesUtils.PARTNER);   //商户编号
+            paramMap.put("nonce_str",WXPayUtil.generateNonceStr());
+            paramMap.put("transaction_id",paymentInfo.getTradeNo()); //微信订单号
+            paramMap.put("out_trade_no",paymentInfo.getOutTradeNo()); //商户订单编号
+            paramMap.put("out_refund_no","tk"+paymentInfo.getOutTradeNo()); //商户退款单号
+//           paramMap.put("total_fee",paymentInfoQuery.getTotalAmount().multiply(new BigDecimal("100")).longValue()+"");
+//           paramMap.put("refund_fee",paymentInfoQuery.getTotalAmount().multiply(new BigDecimal("100")).longValue()+"");
+            paramMap.put("total_fee","1");
+            paramMap.put("refund_fee","1");
+            // 将封装的map信息转为xml的格式
+            String paramXml = WXPayUtil.generateSignedXml(paramMap,ConstantPropertiesUtils.PARTNERKEY);
+            // 设置调用的微信退款订单接口
+            HttpClient client = new HttpClient("https://api.mch.weixin.qq.com/secapi/pay/refund");
+            client.setXmlParam(paramXml);
+            client.setHttps(true);
+            // 设置证书信息
+            client.setCert(true);
+            client.setCertPassword(ConstantPropertiesUtils.CERT);
+            // 执行调用
+            client.post();
+
+            // 接收调用返回的数据信息,并将其转为map数据
+            String xml = client.getContent();
+            Map<String, String> resultMap = WXPayUtil.xmlToMap(xml);
+            if (null != resultMap && WXPayConstants.SUCCESS.equalsIgnoreCase(resultMap.get("result_code"))){
+                // 修改退款记录的信息
+                refundInfo.setCallbackTime(new Date());
+                refundInfo.setTradeNo(resultMap.get("refund_id"));
+                // 更新为已退款
+                refundInfo.setRefundStatus(RefundStatusEnum.REFUND.getStatus());
+                refundInfo.setCallbackContent(JSONObject.toJSONString(resultMap));
+                refundInfoService.updateById(refundInfo);
+                return true;
+            }
+            return false;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
 
