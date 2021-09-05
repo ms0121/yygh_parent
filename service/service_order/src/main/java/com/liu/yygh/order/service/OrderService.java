@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lms.yygh.model.order.OrderInfo;
+import com.lms.yygh.vo.order.OrderCountQueryVo;
 import com.lms.yygh.vo.order.OrderQueryVo;
+
+import java.util.Map;
 
 /**
  * @author lms
@@ -26,6 +29,9 @@ public interface OrderService extends IService<OrderInfo> {
 
     // 就诊提醒
     void patientTips();
+
+    // 预约统计信息
+    Map<String, Object> getCountOrder(OrderCountQueryVo orderCountQueryVo);
 
 
 }

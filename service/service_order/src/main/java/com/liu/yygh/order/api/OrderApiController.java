@@ -7,6 +7,7 @@ import com.liu.yygh.common.utils.AuthContextHolder;
 import com.liu.yygh.order.service.OrderService;
 import com.lms.yygh.enums.OrderStatusEnum;
 import com.lms.yygh.model.order.OrderInfo;
+import com.lms.yygh.vo.order.OrderCountQueryVo;
 import com.lms.yygh.vo.order.OrderQueryVo;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * @author lms
@@ -87,4 +89,20 @@ public class OrderApiController {
         boolean flag = orderService.cancelOrder(orderId);
         return Result.ok(flag);
     }
+
+
+    /**
+     * @param orderCountQueryVo 当前传入的是一个json的数据信息
+     * @return
+     */
+    @ApiOperation(value = "获取订单统计信息")
+    @PostMapping("inner/getCountMap")
+    public Map<String, Object> getCountMap(@RequestBody OrderCountQueryVo orderCountQueryVo){
+        return orderService.getCountOrder(orderCountQueryVo);
+    }
+
+
+
+
+
 }

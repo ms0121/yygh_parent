@@ -20,9 +20,7 @@ import com.lms.yygh.model.order.OrderInfo;
 import com.lms.yygh.model.user.Patient;
 import com.lms.yygh.vo.hosp.ScheduleOrderVo;
 import com.lms.yygh.vo.msm.MsmVo;
-import com.lms.yygh.vo.order.OrderMqVo;
-import com.lms.yygh.vo.order.OrderQueryVo;
-import com.lms.yygh.vo.order.SignInfoVo;
+import com.lms.yygh.vo.order.*;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -33,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * @author lms
@@ -324,6 +323,32 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderInfo>
             msmVo.setParam(param);
             rabbitService.sendMessage(MqConst.EXCHANGE_DIRECT_MSM, MqConst.ROUTING_MSM_ITEM, msmVo);
         }
+    }
+
+
+    /**
+     * 预约统计信息
+     * 因为要绘制图表信息，需要的数据是数组的形式，但是要转为接送的数据信息，所以
+     * 我们使用的是返回list列表的信息，然后使用map进行数据的封装
+      * @param orderCountQueryVo
+     * @return
+     */
+    @Override
+    public Map<String, Object> getCountOrder(OrderCountQueryVo orderCountQueryVo) {
+        // 获取到每个预约时间的预约人数数量信息列表
+        // 先获取到数据信息
+        List<OrderCountVo> orderCountVoList = baseMapper.selectOrderCount(orderCountQueryVo);
+        // 获取x需要的数据信息，list集合（数组），所以可以使用stream流的方式进行获取每个对象的预约日期
+        // 先将得到的list转为stream流，然后使用map进行提取指定的属性信息，最后转为list集合
+        List<String> dateList =
+                orderCountVoList.stream().map(OrderCountVo::getReserveDate).collect(Collectors.toList());
+        // 获取y都需要的数据信息，list集合（数组）的形式，
+        List<Integer> countList =
+                orderCountVoList.stream().map(OrderCountVo::getCount).collect(Collectors.toList());
+        Map<String, Object> map = new HashMap<>();
+        map.put("dateList", dateList);
+        map.put("countList", countList);
+        return map;
     }
 
 
