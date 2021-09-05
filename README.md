@@ -1,4 +1,4 @@
-# yygh_parent
+# yygh
 ## 技术栈
 ### 后端技术
 - SpringBoot：简化新Spring应用的初始搭建以及开发过程
