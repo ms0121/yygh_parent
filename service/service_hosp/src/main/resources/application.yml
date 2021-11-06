@@ -18,20 +18,47 @@ spring:
     username: root
     password:
 
-
 # 返回json的全局时间格式
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
 
 
-##服务注册/发现中心的地址
-#  cloud:
-#    nacos:
-#      discovery:
-#        server-addr: 127.0.0.1:8848
-#
-#
+# MongoDB的使用
+  data:
+    mongodb:
+      uri: mongodb://192.168.115.129:27017/yygh_hosp
+
+#服务注册/发现中心的地址
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+
+
+## rabbitmq的地址
+  rabbitmq:
+    host: 192.168.115.129
+    port: 5672
+    username: guest
+    password: guest
+
+
+#  配置redis做缓存的实现
+  redis:
+    host: 192.168.115.129
+    port: 6379
+    database: 0
+    timeout: 1800000
+
+    lettuce:
+      pool:
+        max-active: 20
+        max-wait: -1
+        #最大阻塞等待时间(负数表示没限制)
+        max-idle: 5
+        min-idle: 0
+
 ##设置sentinel地址
 #    sentinel:
 #      transport:
@@ -45,12 +72,8 @@ spring:
 #      database: yygh_hosp
 #
 #
-## rabbitmq的地址
-#  rabbitmq:
-#    host: 127.0.0.1
-#    port: 5672
-#    username: guest
-#    password: guest
+
+
 #
 #
 ## 开启sentinel，用于服务降级
@@ -60,7 +83,7 @@ spring:
 
 #配置mapper xml问价的路径信息
 mybatis-plus:
-  mapper-locations: classpath:com/liu/yygh/mapper/xml/*.xml
+  mapper-locations: classpath:com/liu/yygh/user/mapper/xml/*.xml
 
 
 

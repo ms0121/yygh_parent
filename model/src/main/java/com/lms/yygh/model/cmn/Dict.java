@@ -62,7 +62,8 @@ public class Dict {
     private String dictCode;
 
     @ApiModelProperty(value = "是否包含子节点")
+    // 说明：hasChildren为树形组件所需字典，exist 标识为数据库表不存在该字段
+    // 用于标识当前的属性可以存在，也可以不存在，目的就是为了实现数据字典的层级关系
     @TableField(exist = false)
     private boolean hasChildren;
-
 }

@@ -3,13 +3,12 @@ package com.liu.yygh.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.liu.yygh.service.HospitalSetService;
-import com.lms.yygh.common.result.Result;
-import com.lms.yygh.common.utils.MD5;
+import com.liu.yygh.common.result.Result;
+import com.liu.yygh.common.utils.MD5;
 import com.lms.yygh.model.hosp.HospitalSet;
 import com.lms.yygh.vo.hosp.HospitalSetQueryVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import javafx.scene.shape.VLineTo;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +24,7 @@ import java.util.Random;
 @Api(tags = "医院设置管理")
 @RestController
 @RequestMapping("/admin/hosp/hospitalSet")
+//@CrossOrigin   // 允许跨域 // 实现跨域 springcloud-gateway已经配置了跨域解决的办法
 public class HospitalSetController {
 
     @Resource
@@ -60,11 +60,12 @@ public class HospitalSetController {
     @PostMapping("findPageHospSet/{current}/{limit}")
     public Result findPage(@PathVariable long current,
                            @PathVariable long limit,
-                           // @RequestBody(required = false)表示当前的参数按照json的方式进行提交，可传或者不传，
+                           // @RequestBody(required = false) RequestBody表示当前的参数按照json的方式进行提交，
+                           // required = false 表示当前的参数可传或者不传，
                            // 请求方式必须为PostMapping
                            @RequestBody(required = false) HospitalSetQueryVo hospitalSetQueryVo){
         // 创建page对象，传递当前页，每页的记录数
-        Page<HospitalSet> page = new Page<>();
+        Page<HospitalSet> page = new Page<>(current, limit);
 
         // 构建查询的条件
         QueryWrapper<HospitalSet> wrapper = new QueryWrapper<>();
@@ -82,7 +83,6 @@ public class HospitalSetController {
 
         // 调用mybatis-plus中的方法实现分页调用
         Page<HospitalSet> hospitalSetPage = hospitalSetService.page(page, wrapper);
-
         // 返回数据
         return Result.ok(hospitalSetPage);
     }
@@ -100,7 +100,8 @@ public class HospitalSetController {
         hospitalSet.setStatus(0);
         // 设置签名秘钥,使用md5进行加密
         Random random = new Random();
-        hospitalSet.setSignKey(MD5.encrypt(System.currentTimeMillis() + "" + random.nextInt(1000)));
+        hospitalSet.setSignKey(MD5.encrypt(System.currentTimeMillis()
+                + "" + random.nextInt(1000)));
 
         // 调用service
         boolean flag = hospitalSetService.save(hospitalSet);
@@ -158,16 +159,5 @@ public class HospitalSetController {
         return Result.ok();
     }
 
-
 }
-
-
-
-
-
-
-
-
-
-
 

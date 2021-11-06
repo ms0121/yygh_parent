@@ -8,5 +8,5 @@ import com.lms.yygh.model.hosp.HospitalSet;
  * @date 2021-07-18 - 21:26
  */
 public interface HospitalSetMapper extends BaseMapper<HospitalSet> {
-    
+
 }

@@ -1,6 +1,7 @@
 package com.liu.yygh.config;
 
-import org.mybatis.spring.annotation.MapperScan;
+import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -11,5 +12,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class HospitalSetConfig {
+
+    // 配置mp的分页插件
+    @Bean
+    public PaginationInterceptor paginationInterceptor(){
+        return new PaginationInterceptor();
+    }
 
 }

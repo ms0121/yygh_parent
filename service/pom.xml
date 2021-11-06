@@ -14,6 +14,12 @@
     <modules>
         <module>service_user</module>
         <module>service_hosp</module>
+        <module>service_cmn</module>
+        <module>service_msm</module>
+        <module>service_oss</module>
+        <module>service_order</module>
+        <module>service_task</module>
+        <module>service_statistics</module>
     </modules>
 
     <dependencies>
@@ -61,16 +67,16 @@
         </dependency>
 
         <!-- 服务调用feign -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-openfeign</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
 
-<!--        &lt;!&ndash; nacos服务注册 &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>com.alibaba.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>-->
-<!--        </dependency>-->
+        <!-- nacos服务注册 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
 
 <!--        &lt;!&ndash; 流量控制sentinel &ndash;&gt;-->
 <!--        <dependency>-->

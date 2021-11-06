@@ -1,0 +1,62 @@
+# spring-gateway的端口号，相当于nginx的9001端口号，客户端统一访问的就是80端口
+server:
+  port: 80
+
+# gateway的微服务名称
+spring:
+  application:
+    name: service-gateway
+
+#注册中心的服务地址
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+
+# 开启服务发现路由(必须进行开启，否则可能会出错)
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+
+# 设置不同微服务的路由id信息(就相当于nginx中的配置路由网址)
+      routes:
+      - id: service-hosp     # 设置路由id
+        uri: lb://service-hosp   # #设置路由的uri
+        predicates:   # 设置路由断言,代理 servicer Id 为 auth-service的/auth/路径
+        - Path=/*/hosp/**   # 表示只要当前的访问路径包括 /hosp/** ,就会跳转到service-hosp微服务，从而进行调用里面的接口服务
+
+      - id: service-cmn     # 设置路由id
+        uri: lb://service-cmn   # #设置路由的uri
+        predicates:   # 设置路由断言,代理 servicer Id 为 auth-service的/auth/路径
+        - Path=/*/cmn/**
+
+      - id: service-user    # 设置路由id
+        uri: lb://service-user   # #设置路由的uri
+        predicates:   # 设置路由断言,代理 servicer Id 为 auth-service的/auth/路径
+        - Path=/*/user/**
+
+      - id: service-msm    # 设置路由id
+        uri: lb://service-msm   # #设置路由的uri
+        predicates:   # 设置路由断言,代理 servicer Id 为 auth-service的/auth/路径
+        - Path=/*/msm/**
+
+      - id: service-user    # 设置路由id,配置微信登录的拦截
+        uri: lb://service-user   # #设置路由的uri
+        predicates:   # 设置路由断言,代理 servicer Id 为 auth-service的/auth/路径
+        - Path=/*/ucenter/**
+
+      - id: service-oss    # 设置路由id,配置微信登录的拦截
+        uri: lb://service-oss   # #设置路由的uri
+        predicates:   # 设置路由断言,代理 servicer Id 为 auth-service的/auth/路径
+        - Path=/*/oss/**
+
+      - id: service-order    # 设置路由id,配置微信登录的拦截
+        uri: lb://service-order   # #设置路由的uri
+        predicates:   # 设置路由断言,代理 servicer Id 为 auth-service的/auth/路径
+        - Path=/*/order/**
+
+      - id: service-statistics    # 设置路由id,配置微信登录的拦截
+        uri: lb://service-statistics   # #设置路由的uri
+        predicates:   # 设置路由断言,代理 servicer Id 为 auth-service的/auth/路径
+        - Path=/*/statistics/**

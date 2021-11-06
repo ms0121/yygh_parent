@@ -1,0 +1,101 @@
+# 服务端口号
+server:
+  port: 8202
+
+# 微服务的名称
+spring:
+  application:
+    name: service-cmn
+
+# 环境设置：dev， test，prod
+  profiles:
+    active: dev
+
+# 连接mysql数据库
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/yygh_cmn?characterEncoding=utf-8&useSSL=false
+    username: root
+    password:
+
+
+# 返回json的全局时间格式
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+
+#  配置redis做缓存的实现
+  redis:
+    host: 192.168.115.129
+    port: 6379
+    database: 0
+    timeout: 1800000
+
+    lettuce:
+      pool:
+        max-active: 20
+        max-wait: -1
+        #最大阻塞等待时间(负数表示没限制)
+        max-idle: 5
+        min-idle: 0
+
+
+
+#nacos服务注册/发现中心的地址
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+#
+#
+##设置sentinel地址
+#    sentinel:
+#      transport:
+#        dashboard: http://127.0.0.1:8858
+#
+## 设置MongoDB的地址
+#  data:
+#    mongodb:
+#      host:
+#      port: 27017
+#      database: yygh_hosp
+#
+#
+## rabbitmq的地址
+#  rabbitmq:
+#    host: 127.0.0.1
+#    port: 5672
+#    username: guest
+#    password: guest
+#
+#
+## 开启sentinel，用于服务降级
+#feign:
+#  sentinel:
+#    enabled: true
+
+#配置mapper xml问价的路径信息
+mybatis-plus:
+  mapper-locations: classpath:com/liu/yygh/cmn/mapper/xml/*.xml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
