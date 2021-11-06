@@ -131,7 +131,7 @@ public class HospitalSetController {
 
     // 7、批量删除医院设置,ids来自于请求参数，并非来自路径
     @DeleteMapping("batchRemove")
-    public Result batchRemoveHospitalSet(@RequestBody List ids){
+    public Result batchRemoveHospitalSet(@RequestBody List<Long> ids){
         boolean b = hospitalSetService.removeByIds(ids);
         return Result.ok();
     }

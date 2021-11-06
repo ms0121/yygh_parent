@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
  */
 
 @Configuration
-@MapperScan("com.liu.yygh.mapper")
 public class HospitalSetConfig {
 
 }
